@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_BASE, fetchMe, persistSessionUser } from '../api/client';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const LoginPage = () => {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -20,8 +21,16 @@ const LoginPage = () => {
       const data = await res.json();
       if (data.success) {
         localStorage.setItem('shnoor_token', data.token);
-        localStorage.setItem('shnoor_user', JSON.stringify(data.user));
-        if (data.user.role === 'admin') navigate('/admin/overview');
+        persistSessionUser(data.user);
+        let role = data.user.role;
+        try {
+          const fresh = await fetchMe();
+          persistSessionUser(fresh);
+          role = fresh.role;
+        } catch {
+          /* keep login payload if /me fails (e.g. brief network glitch) */
+        }
+        if (role === 'admin') navigate('/admin/overview');
         else navigate('/employee/overview');
       } else setError(data.message);
     } catch {

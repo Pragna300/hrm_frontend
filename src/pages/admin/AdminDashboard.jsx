@@ -1,14 +1,28 @@
-import React, { useState } from 'react';
-import { 
-  Users, 
-  UserCheck,
-  Clock,
-  Calendar,
-  ShieldCheck
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, UserCheck, Calendar, ShieldCheck } from 'lucide-react';
+import { fetchMe, persistSessionUser } from '../../api/client';
+
+function readStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem('shnoor_user') || '{"name": "Admin"}');
+  } catch {
+    return { name: 'Admin' };
+  }
+}
 
 const AdminDashboard = () => {
-  const [user] = useState(JSON.parse(localStorage.getItem('shnoor_user') || '{"name": "Admin"}'));
+  const [user, setUser] = useState(readStoredUser);
+
+  useEffect(() => {
+    fetchMe()
+      .then((u) => {
+        persistSessionUser(u);
+        setUser(u);
+      })
+      .catch(() => {
+        /* keep cached user if /me fails */
+      });
+  }, []);
 
   return (
     <div className="v7-admin-dashboard">

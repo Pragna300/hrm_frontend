@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_BASE } from '../api/client';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const RegisterPage = () => {
     if (formData.password !== formData.confirmPassword) return setError('Passwords do not match');
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: formData.name, email: formData.email, password: formData.password }),
