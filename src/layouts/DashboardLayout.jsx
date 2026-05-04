@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { fetchMe, getStoredToken, persistSessionUser } from '../api/client';
 import { 
   LayoutDashboard, 
   Newspaper, 
@@ -18,14 +19,40 @@ import {
   LogOut
 } from 'lucide-react';
 
+function readStoredUser() {
+  try {
+    const raw = localStorage.getItem('shnoor_user');
+    if (!raw) return { name: 'User', role: 'employee' };
+    return JSON.parse(raw);
+  } catch {
+    return { name: 'User', role: 'employee' };
+  }
+}
+
 const DashboardLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({ name: 'User', role: 'employee' });
+  const [userData, setUserData] = useState(readStoredUser);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('shnoor_user');
-    if (savedUser) setUserData(JSON.parse(savedUser));
+    const token = getStoredToken();
+    if (!token) {
+      navigate('/login', { replace: true });
+      return;
+    }
+
+    fetchMe()
+      .then((user) => {
+        persistSessionUser(user);
+        setUserData(user);
+      })
+      .catch((err) => {
+        if (err?.status === 401) {
+          localStorage.removeItem('shnoor_token');
+          localStorage.removeItem('shnoor_user');
+          navigate('/login', { replace: true });
+        }
+      });
   }, [navigate]);
 
   const handleLogout = () => {
