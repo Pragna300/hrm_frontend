@@ -65,135 +65,186 @@ const EmployeeDashboard = () => {
   const canUseAttendance = user.employeeId != null;
 
   return (
-    <div className="v6-dashboard-grid">
-      <div className="v6-profile-col">
-        <div className="v6-card v6-profile-card">
-          <div className="v6-profile-hero">
-            <div className="v6-avatar-ring">
-              <div className="v6-avatar-inner">{user.name.charAt(0)}</div>
+    <div className="v7-dashboard-container">
+      <div className="v7-grid">
+        {/* Left Profile Column */}
+        <aside className="v7-profile-sidebar">
+          <div className="v7-card v7-profile-card">
+            <div className="v7-profile-header">
+              <div className="v7-avatar-container">
+                <div className="v7-avatar-glow"></div>
+                <div className="v7-avatar-circle">
+                  {user.profilePhotoUrl ? (
+                    <img src={user.profilePhotoUrl} alt={user.name} />
+                  ) : (
+                    user.name.charAt(0)
+                  )}
+                </div>
+              </div>
+              <h2 className="v7-user-name">{user.name}</h2>
+              <p className="v7-user-title">{user.designation || 'Software Engineer Intern'}</p>
+              <div className="v7-user-tags">
+                <span className="v7-tag">Remote</span>
+                <span className="v7-tag">Information Technology</span>
+              </div>
             </div>
-            <h3>{user.name}</h3>
-            <p className="v6-rank">{user.designation || 'Team member'}</p>
-            <div className="v6-gold-badges">
-              <span className="v6-g-badge">
-                <Award size={10} /> Gold Performer
-              </span>
-            </div>
-          </div>
 
-          <div className="v6-info-list">
-            <InfoRowV6 label="Employee ID" value={user.employeeCode || '—'} />
-            <InfoRowV6 label="Department" value={user.departmentName || '—'} />
-            <InfoRowV6 label="Organization" value={user.organizationName || 'SHNOOR International LLC'} />
-            <InfoRowV6 label="Location" value={user.locationName || '—'} />
-            <InfoRowV6 label="Manager" value={user.managerName || '—'} />
-          </div>
+            <div className="v7-profile-details">
+              <DetailRow label="Employee ID" value={user.employeeCode || 'SH100238'} />
+              <DetailRow label="Company" value={user.organizationName || 'SHNOOR International LLC'} />
+              <DetailRow label="Date Hired" value={user.dateHired ? new Date(user.dateHired).toLocaleDateString('en-GB') : '31/03/2026'} />
+              <DetailRow label="Contracted Hours" value="40.00(FTE:1.00)" />
+              
+              <div className="v7-detail-divider"></div>
 
-          <hr className="v6-divider" />
-
-          <div className="v6-info-list contact">
-            <InfoRowV6 label="Official Mail" value={user.workEmail || user.email || '—'} />
-            <InfoRowV6 label="Phone" value={user.workPhone || '—'} />
-          </div>
-        </div>
-      </div>
-
-      <div className="v6-content-col">
-        <EmployeeAttendancePanel
-          now={now}
-          todayLog={todayLog}
-          loading={loading}
-          error={error}
-          actionLoading={actionLoading}
-          canUseAttendance={canUseAttendance}
-          onTap={handleTap}
-        />
-
-        <div className="v6-bottom-row">
-          <div className="v6-card v6-empty-card">
-            <h4>Pending Authorizations</h4>
-            <div className="v6-empty-content">
-              <Inbox size={48} />
-              <p>All items cleared</p>
+              <DetailRow label="Official Email" value={user.workEmail || user.email || '—'} isEmail />
+              <DetailRow label="Work Phone" value={user.workPhone || '+91 7032320377'} />
+              <DetailRow label="Personal Email" value={user.personalEmail || '—'} isEmail isEditable />
+              <DetailRow label="Personal Mobile" value={user.personalPhone || '+91 7032320377'} isEditable />
             </div>
           </div>
-          <div className="v6-card v6-empty-card">
-            <h4>Company Announcements</h4>
-            <div className="v6-empty-content">
-              <FileSearch size={48} />
-              <p>No new updates</p>
+        </aside>
+
+        {/* Right Content Column */}
+        <main className="v7-content-main">
+          <EmployeeAttendancePanel
+            now={now}
+            todayLog={todayLog}
+            loading={loading}
+            error={error}
+            actionLoading={actionLoading}
+            canUseAttendance={canUseAttendance}
+            onTap={handleTap}
+          />
+
+          <div className="v7-widget-grid">
+            <div className="v7-card v7-widget-card">
+              <div className="v7-widget-header">
+                <h3>Average Daily Working Hours</h3>
+              </div>
+              <div className="v7-widget-body">
+                <div className="v7-progress-container">
+                  <div className="v7-progress-label">
+                    <span>{user.name} - {user.designation || 'Software Engineer Intern'} (05:39/8:00)</span>
+                  </div>
+                  <div className="v7-progress-bar">
+                    <div className="v7-progress-fill blue" style={{ width: '70%' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="v7-card v7-widget-card">
+              <div className="v7-widget-header">
+                <h3>On-time Arrival</h3>
+              </div>
+              <div className="v7-widget-body">
+                <div className="v7-progress-container">
+                  <div className="v7-progress-label">
+                    <span>{user.name} - {user.designation || 'Software Engineer Intern'} (100%)</span>
+                  </div>
+                  <div className="v7-progress-bar">
+                    <div className="v7-progress-fill green" style={{ width: '100%' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="v7-card v7-widget-card v7-empty-widget">
+              <div className="v7-widget-header">
+                <h3>Team Members On Leave</h3>
+              </div>
+              <div className="v7-widget-body centered">
+                <div className="v7-empty-state">
+                  <Inbox size={48} strokeWidth={1} />
+                  <p>Sorry! No Record Found</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="v7-card v7-widget-card v7-empty-widget">
+              <div className="v7-widget-header">
+                <h3>Leave Approval Pending</h3>
+              </div>
+              <div className="v7-widget-body centered">
+                <div className="v7-empty-state">
+                  <Inbox size={48} strokeWidth={1} />
+                  <p>Sorry! No Record Found</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
 
       <style>{`
-        .v6-dashboard-grid { display: grid; grid-template-columns: 320px 1fr; gap: 24px; font-family: 'Inter', sans-serif; }
-        .v6-card { background: #fff; border: 1px solid #eef2f6; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
-        .v6-profile-card { padding: 35px 25px; text-align: center; }
-        .v6-avatar-ring { 
-          width: 90px; height: 90px; margin: 0 auto 20px; border-radius: 50%; 
-          padding: 4px; background: linear-gradient(135deg, #3174ad, #f59e0b);
+        .v7-dashboard-container { padding: 0; min-height: 100%; font-family: 'Inter', sans-serif; }
+        .v7-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
+        
+        .v7-card { background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        
+        .v7-profile-card { padding: 30px 20px; }
+        .v7-profile-header { text-align: center; margin-bottom: 30px; }
+        
+        .v7-avatar-container { position: relative; width: 120px; height: 120px; margin: 0 auto 15px; }
+        .v7-avatar-circle { 
+          width: 100%; height: 100%; border-radius: 50%; background: #2c3e50; color: #fff;
+          display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 700;
+          overflow: hidden; border: 4px solid #fff; position: relative; z-index: 2;
         }
-        .v6-avatar-inner { 
-          width: 100%; height: 100%; background: #1a365d; color: white; 
-          border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-          font-size: 32px; font-weight: 900; 
+        .v7-avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .v7-avatar-glow {
+          position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px;
+          border-radius: 50%; background: linear-gradient(135deg, #3174ad, #f59e0b);
+          opacity: 0.15; filter: blur(8px);
         }
-        .v6-profile-hero h3 { font-size: 20px; font-weight: 800; color: #1a365d; margin-bottom: 4px; }
-        .v6-rank { font-size: 13px; color: #718096; margin-bottom: 12px; }
-        .v6-gold-badges { display: flex; justify-content: center; margin-bottom: 25px; }
-        .v6-g-badge { background: #fffaf0; color: #f59e0b; border: 1px solid #feebc8; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 100px; display: flex; align-items: center; gap: 6px; }
-        .v6-info-list { text-align: left; display: flex; flex-direction: column; gap: 15px; }
-        .v6-info-row { display: flex; flex-direction: column; }
-        .v6-info-row .lbl { font-size: 11px; font-weight: 600; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.5px; }
-        .v6-info-row .val { font-size: 14px; font-weight: 600; color: #2d3748; }
-        .v6-divider { border: 0; border-top: 1px solid #f1f3f5; margin: 25px 0; }
-        .v6-att-card { padding: 0; overflow: hidden; }
-        .v6-att-top { background: #f8fafc; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eef2f6; }
-        .v6-date-pill { font-size: 12px; font-weight: 700; color: #3174ad; text-transform: uppercase; }
-        .v6-live-clock { font-family: monospace; font-size: 14px; font-weight: 700; color: #1a365d; }
-        .v6-att-body { padding: 35px 25px; display: flex; align-items: center; justify-content: space-between; }
-        .v6-att-metrics { display: flex; gap: 40px; align-items: center; }
-        .v6-m-divider { width: 1px; height: 40px; background: #eef2f6; }
-        .v6-metric { display: flex; flex-direction: column; }
-        .v6-m-val { font-size: 28px; font-weight: 900; color: #1a365d; }
-        .v6-m-val.gold { color: #f59e0b; }
-        .v6-m-lbl { font-size: 12px; font-weight: 600; color: #718096; }
-        .v6-btn-att { 
-          padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 800; 
-          cursor: pointer; border: none; transition: 0.3s;
-        }
-        .v6-btn-att.tap-in { background: #3174ad; color: white; box-shadow: 0 4px 12px rgba(49, 116, 173, 0.2); }
-        .v6-btn-att.tap-in:hover:not(:disabled) { background: #2b6cb0; transform: translateY(-2px); }
-        .v6-btn-att.tap-out { background: #f45b5b; color: white; box-shadow: 0 4px 12px rgba(244, 91, 91, 0.2); }
-        .v6-btn-att.tap-out:hover:not(:disabled) { background: #e04a4a; transform: translateY(-2px); }
-        .v6-att-unavailable { font-size: 14px; color: #718096; font-weight: 600; margin: 0; max-width: 320px; text-align: right; }
-        .v6-error-tag { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #c53030; margin-bottom: 8px; }
-        .v6-metric-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
-        .v6-metric-card { padding: 25px; }
-        .v6-m-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-        .v6-m-header h4 { font-size: 15px; font-weight: 800; color: #1a365d; }
-        .v6-m-icon { color: #f59e0b; }
-        .v6-m-footer { font-size: 12px; color: #718096; line-height: 1.45; }
-        .v6-m-val-large { font-size: 32px; font-weight: 900; color: #1a365d; margin-bottom: 8px; }
-        .v6-m-val-large .small { font-size: 14px; font-weight: 600; color: #a0aec0; }
-        .v6-bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
-        .v6-empty-card { padding: 25px; min-height: 250px; display: flex; flex-direction: column; }
-        .v6-empty-card h4 { font-size: 15px; font-weight: 800; color: #1a365d; margin-bottom: 40px; }
-        .v6-empty-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #e2e8f0; gap: 15px; }
-        .v6-empty-content p { color: #a0aec0; font-size: 14px; font-weight: 600; }
-        @media (max-width: 1024px) { .v6-dashboard-grid { grid-template-columns: 1fr; } }
+        
+        .v7-user-name { font-size: 20px; font-weight: 700; color: #1a202c; margin-bottom: 4px; }
+        .v7-user-title { font-size: 14px; color: #718096; margin-bottom: 12px; }
+        .v7-user-tags { display: flex; justify-content: center; gap: 8px; }
+        .v7-tag { font-size: 11px; font-weight: 600; color: #718096; background: #f7fafc; border: 1px solid #edf2f7; padding: 2px 8px; border-radius: 4px; }
+        
+        .v7-profile-details { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+        .v7-detail-row { display: flex; flex-direction: column; gap: 2px; }
+        .v7-detail-label { font-size: 11px; color: #a0aec0; font-weight: 500; }
+        .v7-detail-value { font-size: 13px; color: #2d3748; font-weight: 600; display: flex; align-items: center; justify-content: space-between; }
+        .v7-detail-value.email { color: #3174ad; }
+        .v7-edit-icon { color: #cbd5e0; cursor: pointer; transition: color 0.2s; }
+        .v7-edit-icon:hover { color: #3174ad; }
+        
+        .v7-detail-divider { height: 1px; background: #f1f5f9; margin: 8px 0; }
+        
+        .v7-content-main { display: flex; flex-direction: column; gap: 20px; }
+        
+        .v7-widget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .v7-widget-card { padding: 20px; }
+        .v7-widget-header h3 { font-size: 15px; font-weight: 700; color: #2d3748; margin-bottom: 20px; }
+        
+        .v7-progress-container { width: 100%; }
+        .v7-progress-label { font-size: 12px; color: #4a5568; font-weight: 600; margin-bottom: 8px; display: block; }
+        .v7-progress-bar { height: 10px; background: #edf2f7; border-radius: 10px; overflow: hidden; }
+        .v7-progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+        .v7-progress-fill.blue { background: #3174ad; }
+        .v7-progress-fill.green { background: #10b981; }
+        
+        .v7-empty-widget { min-height: 220px; display: flex; flex-direction: column; }
+        .v7-widget-body.centered { flex: 1; display: flex; align-items: center; justify-content: center; }
+        .v7-empty-state { text-align: center; color: #cbd5e0; }
+        .v7-empty-state p { margin-top: 12px; font-size: 14px; font-weight: 600; color: #a0aec0; }
+        
+        @media (max-width: 1200px) { .v7-grid { grid-template-columns: 1fr; } }
       `}</style>
     </div>
   );
 };
 
-const InfoRowV6 = ({ label, value }) => (
-  <div className="v6-info-row">
-    <span className="lbl">{label}</span>
-    <span className="val">{value}</span>
+const DetailRow = ({ label, value, isEmail, isEditable }) => (
+  <div className="v7-detail-row">
+    <span className="v7-detail-label">{label}</span>
+    <div className={`v7-detail-value ${isEmail ? 'email' : ''}`}>
+      {value}
+      {isEditable && <Inbox size={14} className="v7-edit-icon" />}
+    </div>
   </div>
 );
-
 export default EmployeeDashboard;

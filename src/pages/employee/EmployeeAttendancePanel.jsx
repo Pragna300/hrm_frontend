@@ -1,15 +1,14 @@
-import React from 'react';
-import { Calendar, AlertCircle, Award } from 'lucide-react';
+import { Calendar, AlertCircle, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 function formatClock(ts) {
-  if (!ts) return '—';
-  return new Date(ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  if (!ts) return '--:--';
+  return new Date(ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
-function formatDurationMinutes(total) {
-  if (total == null || Number.isNaN(total)) return '0h 0m';
+function formatDurationDetailed(total) {
+  if (total == null || Number.isNaN(total)) return '0 Hrs 0 Mins';
   const m = Math.max(0, Math.round(total));
-  return `${Math.floor(m / 60)}h ${m % 60}m`;
+  return `${Math.floor(m / 60)} Hrs ${m % 60} Mins`;
 }
 
 /** Active (work) minutes from segment list + clock for open segment. */
@@ -43,159 +42,105 @@ const EmployeeAttendancePanel = ({
   const activeLive = computeActiveMinutesLive(todayLog, now);
   const segments = todayLog?.segments ?? [];
 
+  // Create an interleaved list of events for "Today's Entries"
+  const entries = [];
+  segments.forEach((s) => {
+    entries.push({ type: 'in', time: s.checkIn });
+    if (s.checkOut) {
+      entries.push({ type: 'out', time: s.checkOut });
+    }
+  });
+
+  const lastIn = segments.length > 0 ? formatClock(segments[0].checkIn) : '--:--';
+  const lastOut = (segments.length > 0 && segments[segments.length - 1].checkOut) 
+    ? formatClock(segments[segments.length - 1].checkOut) 
+    : '--:--';
+
   return (
-    <>
-      <div className="v6-card v6-att-card">
-        <div className="v6-att-top">
-          <div className="v6-date-pill">
-            {now.toLocaleDateString('en-IN', { weekday: 'long', day: '2-digit', month: 'long' })}
+    <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+      <div className="flex flex-col">
+        <div className="flex items-start gap-5 border-b border-slate-100 pb-6 mb-5">
+          <div className="w-[60px] h-[60px] bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-slate-600">
+            <Clock size={32} strokeWidth={1.5} />
           </div>
-          <div className="v6-live-clock">
-            {now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-          </div>
-        </div>
-
-        <div className="v6-att-body v6-att-body-stack">
-          <div className="v6-att-metrics v6-att-metrics-wrap">
-            <div className="v6-metric">
-              <span className="v6-m-val">{formatDurationMinutes(activeLive)}</span>
-              <span className="v6-m-lbl">Active time</span>
+          <div className="flex-1">
+            <div className="text-[13px] text-slate-500 font-medium mb-2">
+              {now.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '/')}
             </div>
-            <div className="v6-m-divider" />
-            <div className="v6-metric">
-              <span className="v6-m-val gold">{formatDurationMinutes(breakMinutes)}</span>
-              <span className="v6-m-lbl">Break time</span>
-            </div>
-            <div className="v6-m-divider" />
-            <div className="v6-metric">
-              <span className="v6-m-val">{segments.length}</span>
-              <span className="v6-m-lbl">Sessions today</span>
-            </div>
-          </div>
-
-          <div className="v6-att-action v6-att-action-col">
-            {error && (
-              <div className="v6-error-tag">
-                <AlertCircle size={12} /> {error}
+            <div className="flex gap-10">
+              <div className="flex flex-col">
+                <span className="text-[22px] font-bold text-slate-800">{formatDurationDetailed(activeLive)}</span>
+                <span className="text-[12px] text-slate-400 font-semibold mt-0.5">Total Work Time</span>
               </div>
-            )}
-            {!canUseAttendance ? (
-              <p className="v6-att-unavailable">Attendance is not available for this account.</p>
-            ) : (
-              <div className="v6-att-btn-row">
+              <div className="flex flex-col">
+                <span className="text-[22px] font-bold text-[#3174ad]">{formatDurationDetailed(breakMinutes)}</span>
+                <span className="text-[12px] text-slate-400 font-semibold mt-0.5">Total Break Time</span>
+              </div>
+            </div>
+          </div>
+          <div className="min-w-[220px]">
+            <div className="flex justify-end gap-5 items-center">
+              <div className="flex flex-col gap-2.5 text-right">
+                <div className="flex flex-col">
+                  <span className="text-[11px] font-bold text-slate-800 mb-0.5">Time In</span>
+                  <span className="text-[14px] font-bold text-[#3174ad]">{lastIn}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[11px] font-bold text-slate-800 mb-0.5">Time Out</span>
+                  <span className="text-[14px] font-bold text-[#f45b5b]">{lastOut}</span>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2.5">
                 <button
                   type="button"
-                  className="v6-btn-att tap-in"
+                  className={`px-6 py-2 rounded font-bold text-[11px] transition-all min-w-[80px] disabled:opacity-50 disabled:cursor-not-allowed ${
+                    !!openSegment 
+                      ? "bg-white text-slate-300 border border-slate-200 cursor-not-allowed" 
+                      : "bg-white text-slate-400 border border-slate-300 hover:border-[#3174ad] hover:text-[#3174ad]"
+                  }`}
                   onClick={() => onTap('tap-in')}
-                  disabled={actionLoading}
+                  disabled={actionLoading || !!openSegment}
                 >
-                  {actionLoading ? 'Processing…' : 'Tap In'}
+                  Tap In
                 </button>
                 <button
                   type="button"
-                  className="v6-btn-att tap-out"
+                  className={`px-6 py-2 rounded font-bold text-[11px] transition-all min-w-[80px] disabled:opacity-50 disabled:cursor-not-allowed ${
+                    !openSegment
+                      ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                      : "bg-[#f45b5b] text-white hover:bg-[#e04a4a]"
+                  }`}
                   onClick={() => onTap('tap-out')}
                   disabled={actionLoading || !openSegment}
-                  title={!openSegment ? 'Tap in first to start a session' : 'End current session'}
                 >
-                  {actionLoading ? 'Processing…' : 'Tap Out'}
+                  Tap Out
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h4 className="text-[12px] text-slate-400 font-semibold mb-4">Today's Entries</h4>
+          <div className="flex gap-6 flex-wrap">
+            {entries.length === 0 ? (
+              <span className="text-[12px] text-slate-300 italic">No entries for today</span>
+            ) : (
+              entries.map((entry, idx) => (
+                <div key={idx} className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-md border border-slate-100">
+                  <div className={`w-2.5 h-2.5 rounded-full ${
+                    entry.type === 'in' 
+                      ? "bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.1)]" 
+                      : "bg-[#f45b5b] shadow-[0_0_0_4px_rgba(244,91,91,0.1)]"
+                  }`}></div>
+                  <span className="text-[13px] font-bold text-slate-600">{formatClock(entry.time)}</span>
+                </div>
+              ))
             )}
-            {openSegment && (
-              <p className="v6-att-status">Current session since {formatClock(openSegment.checkIn)}</p>
-            )}
           </div>
         </div>
       </div>
-
-      <div className="v6-card v6-segment-log">
-        <h4 className="v6-seg-title">Tap log (today)</h4>
-        {loading ? (
-          <p className="v6-seg-empty">Loading…</p>
-        ) : segments.length === 0 ? (
-          <p className="v6-seg-empty">No taps yet today.</p>
-        ) : (
-          <div className="v6-seg-table-wrap">
-            <table className="v6-seg-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Tap in</th>
-                  <th>Tap out</th>
-                  <th>Active</th>
-                  <th>Break after</th>
-                </tr>
-              </thead>
-              <tbody>
-                {segments.map((s, idx) => (
-                  <tr key={s.id}>
-                    <td>{idx + 1}</td>
-                    <td>{formatClock(s.checkIn)}</td>
-                    <td>{s.checkOut ? formatClock(s.checkOut) : <em>In progress</em>}</td>
-                    <td>
-                      {s.durationMinutes != null
-                        ? formatDurationMinutes(s.durationMinutes)
-                        : formatDurationMinutes(
-                            Math.max(
-                              0,
-                              Math.round((now - new Date(s.checkIn)) / 60000)
-                            )
-                          )}
-                    </td>
-                    <td>
-                      {s.gapBeforeNextMinutes != null
-                        ? formatDurationMinutes(s.gapBeforeNextMinutes)
-                        : '—'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      <div className="v6-metric-row">
-        <div className="v6-card v6-metric-card">
-          <div className="v6-m-header">
-            <Award size={16} className="v6-m-icon" />
-            <h4>Active vs break</h4>
-          </div>
-          <p className="v6-m-footer">
-            Active is summed work blocks; break is time between tap out and the next tap in.
-          </p>
-        </div>
-        <div className="v6-card v6-metric-card">
-          <div className="v6-m-header">
-            <Calendar size={16} className="v6-m-icon" />
-            <h4>Leave balance</h4>
-          </div>
-          <div className="v6-m-val-large">
-            24 <span className="small">Days</span>
-          </div>
-          <span className="v6-m-footer">Prorated for 2026</span>
-        </div>
-      </div>
-
-      <style>{`
-        .v6-att-body-stack { flex-direction: column; align-items: stretch; gap: 24px; }
-        .v6-att-metrics-wrap { flex-wrap: wrap; justify-content: flex-start; gap: 24px 32px; }
-        .v6-att-action-col { align-items: flex-end; text-align: right; }
-        .v6-att-btn-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
-        .v6-att-status { margin: 8px 0 0; font-size: 12px; color: #718096; font-weight: 600; }
-        .v6-btn-att:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
-        .v6-segment-log { padding: 0; overflow: hidden; margin-top: 24px; }
-        .v6-seg-title { margin: 0; padding: 16px 20px; font-size: 15px; font-weight: 800; color: #1a365d; border-bottom: 1px solid #eef2f6; }
-        .v6-seg-empty { padding: 24px 20px; color: #a0aec0; font-size: 14px; font-weight: 600; margin: 0; }
-        .v6-seg-table-wrap { overflow-x: auto; }
-        .v6-seg-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .v6-seg-table th, .v6-seg-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #f1f3f5; }
-        .v6-seg-table th { background: #f8fafc; color: #718096; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
-        .v6-seg-table td { color: #2d3748; font-weight: 600; }
-        .v6-seg-table em { color: #3174ad; font-style: normal; font-weight: 700; }
-      `}</style>
-    </>
+    </div>
   );
 };
 
