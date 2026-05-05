@@ -96,7 +96,7 @@ const EmployeeAttendancePanel = ({
                       : "bg-white text-slate-400 border border-slate-300 hover:border-[#3174ad] hover:text-[#3174ad]"
                   }`}
                   onClick={() => onTap('tap-in')}
-                  disabled={actionLoading || !!openSegment}
+                  disabled={actionLoading || Boolean(openSegment)}
                 >
                   Tap In
                 </button>

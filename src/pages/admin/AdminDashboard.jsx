@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Users, UserCheck, Calendar, ShieldCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Users, UserCheck, ShieldCheck } from 'lucide-react';
 import { fetchMe, persistSessionUser } from '../../api/client';
 
 function readStoredUser() {
