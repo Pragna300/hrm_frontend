@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Clock } from 'lucide-react';
 
 function formatClock(ts) {
@@ -7,7 +8,8 @@ function formatClock(ts) {
 
 function formatDurationDetailed(total) {
   if (total == null || Number.isNaN(total)) return '0 Hrs 0 Mins';
-  const m = Math.max(0, Math.round(total));
+  const totalRounded = Math.floor(total);
+  const m = Math.max(0, totalRounded);
   return `${Math.floor(m / 60)} Hrs ${m % 60} Mins`;
 }
 
@@ -21,10 +23,34 @@ function computeActiveMinutesLive(data, nowDate) {
     } else {
       sum += Math.max(
         0,
-        Math.round((nowDate.getTime() - new Date(s.checkIn).getTime()) / 60000)
+        (nowDate.getTime() - new Date(s.checkIn).getTime()) / 60000
       );
     }
   }
+  return sum;
+}
+
+/** Break minutes: gaps between segments + time since last checkout (if no open segment). */
+function computeBreakMinutesLive(data, nowDate) {
+  if (!data?.segments?.length) return 0;
+  const segments = data.segments;
+  let sum = 0;
+
+  // 1. Gaps between completed segments
+  for (let i = 0; i < segments.length - 1; i++) {
+    const currentOut = segments[i].checkOut;
+    const nextIn = segments[i + 1].checkIn;
+    if (currentOut && nextIn) {
+      sum += Math.max(0, (new Date(nextIn).getTime() - new Date(currentOut).getTime()) / 60000);
+    }
+  }
+
+  // 2. Live gap if the last segment is closed
+  const last = segments[segments.length - 1];
+  if (last.checkOut) {
+    sum += Math.max(0, (nowDate.getTime() - new Date(last.checkOut).getTime()) / 60000);
+  }
+
   return sum;
 }
 
@@ -35,8 +61,10 @@ const EmployeeAttendancePanel = ({
   onTap,
 }) => {
   const openSegment = todayLog?.openSegment;
-  const breakMinutes = todayLog?.breakMinutes ?? 0;
-  const activeLive = computeActiveMinutesLive(todayLog, now);
+  
+  const activeLive = useMemo(() => computeActiveMinutesLive(todayLog, now), [todayLog, now]);
+  const breakLive = useMemo(() => computeBreakMinutesLive(todayLog, now), [todayLog, now]);
+  
   const segments = todayLog?.segments ?? [];
 
   // Create an interleaved list of events for "Today's Entries"
@@ -70,7 +98,7 @@ const EmployeeAttendancePanel = ({
                 <span className="text-[12px] text-slate-400 font-semibold mt-0.5">Total Work Time</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[22px] font-bold text-[#3174ad]">{formatDurationDetailed(breakMinutes)}</span>
+                <span className="text-[22px] font-bold text-[#3174ad]">{formatDurationDetailed(breakLive)}</span>
                 <span className="text-[12px] text-slate-400 font-semibold mt-0.5">Total Break Time</span>
               </div>
             </div>

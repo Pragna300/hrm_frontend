@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Inbox } from 'lucide-react';
 import { authFetch, fetchMe, persistSessionUser } from '../../api/client';
 import EmployeeAttendancePanel from './EmployeeAttendancePanel';
@@ -34,15 +34,14 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
 
-    fetchMe()
-      .then((u) => {
+    // Parallel fetching for faster load
+    Promise.all([
+      fetchMe().then(u => {
         setUser(u);
         persistSessionUser(u);
-      })
-      .catch(() => {})
-      .finally(() => {
-        fetchToday();
-      });
+      }),
+      fetchToday()
+    ]).catch(() => {});
 
     return () => clearInterval(t);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
