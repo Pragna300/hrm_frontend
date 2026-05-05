@@ -45,7 +45,8 @@ const EmployeeDashboard = () => {
       });
 
     return () => clearInterval(t);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   async function handleTap(action) {
     setActionLoading(true);
