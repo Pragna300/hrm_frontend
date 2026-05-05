@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { FileSearch, Inbox, Award } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Inbox } from 'lucide-react';
 import { authFetch, fetchMe, persistSessionUser } from '../../api/client';
 import EmployeeAttendancePanel from './EmployeeAttendancePanel';
 
@@ -18,6 +18,19 @@ const EmployeeDashboard = () => {
     }
   });
 
+  async function fetchToday() {
+    try {
+      const res = await authFetch('/attendance/today');
+      const data = await res.json();
+      if (data.success) setTodayLog(data.data);
+      else if (res.status === 403) setError(data.message || 'Attendance unavailable');
+    } catch {
+      setError('Cannot reach server');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
 
@@ -34,19 +47,6 @@ const EmployeeDashboard = () => {
     return () => clearInterval(t);
   }, []);
 
-  async function fetchToday() {
-    try {
-      const res = await authFetch('/attendance/today');
-      const data = await res.json();
-      if (data.success) setTodayLog(data.data);
-      else if (res.status === 403) setError(data.message || 'Attendance unavailable');
-    } catch {
-      setError('Cannot reach server');
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function handleTap(action) {
     setActionLoading(true);
     setError('');
@@ -61,8 +61,6 @@ const EmployeeDashboard = () => {
       setActionLoading(false);
     }
   }
-
-  const canUseAttendance = user.employeeId != null;
 
   return (
     <div className="v7-dashboard-container">
@@ -110,10 +108,7 @@ const EmployeeDashboard = () => {
           <EmployeeAttendancePanel
             now={now}
             todayLog={todayLog}
-            loading={loading}
-            error={error}
             actionLoading={actionLoading}
-            canUseAttendance={canUseAttendance}
             onTap={handleTap}
           />
 

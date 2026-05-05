@@ -1,4 +1,4 @@
-import { Calendar, AlertCircle, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 function formatClock(ts) {
   if (!ts) return '--:--';
@@ -31,10 +31,7 @@ function computeActiveMinutesLive(data, nowDate) {
 const EmployeeAttendancePanel = ({
   now,
   todayLog,
-  loading,
-  error,
   actionLoading,
-  canUseAttendance,
   onTap,
 }) => {
   const openSegment = todayLog?.openSegment;
@@ -94,7 +91,7 @@ const EmployeeAttendancePanel = ({
                 <button
                   type="button"
                   className={`px-6 py-2 rounded font-bold text-[11px] transition-all min-w-[80px] disabled:opacity-50 disabled:cursor-not-allowed ${
-                    !!openSegment 
+                    openSegment 
                       ? "bg-white text-slate-300 border border-slate-200 cursor-not-allowed" 
                       : "bg-white text-slate-400 border border-slate-300 hover:border-[#3174ad] hover:text-[#3174ad]"
                   }`}
