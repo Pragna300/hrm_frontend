@@ -96,7 +96,14 @@ const LoginPage = () => {
           </form>
 
           <div className="login-footer">
-            Want to register your company? <Link to="/register">Create Admin Account</Link>
+            <p>Want to register your company? <Link to="/register">Create Admin Account</Link></p>
+            <div className="legal-links">
+              <Link to="/terms">Terms & Conditions</Link>
+              <span className="separator">•</span>
+              <Link to="/privacy">Privacy Policy</Link>
+              <span className="separator">•</span>
+              <Link to="/cookies">Cookie Policy</Link>
+            </div>
           </div>
         </div>
       </div>
@@ -225,6 +232,31 @@ const LoginPage = () => {
           color: #3b82f6;
           font-weight: 700;
           text-decoration: none;
+        }
+        .login-footer p {
+          margin-bottom: 12px;
+        }
+        .legal-links {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          margin-top: 16px;
+          padding-top: 16px;
+          border-top: 1px solid #f1f5f9;
+        }
+        .legal-links a {
+          color: #64748b;
+          font-weight: 500;
+          font-size: 13px;
+        }
+        .legal-links a:hover {
+          color: #3b82f6;
+          text-decoration: underline;
+        }
+        .separator {
+          color: #cbd5e1;
+          font-size: 10px;
         }
         .spinner {
           width: 20px;
