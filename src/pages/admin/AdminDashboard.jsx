@@ -103,8 +103,8 @@ const AdminDashboard = () => {
               <div className="task-info">
                 <div className="action-icon"><UserPlus size={18} /></div>
                 <div>
-                  <p>Onboard New Member</p>
-                  <span>Add a new admin or employee to the system</span>
+                  <p>Onboard New Employee</p>
+                  <span>Add a new staff member to the organization</span>
                 </div>
               </div>
               <Plus size={18} />
@@ -142,7 +142,7 @@ const AdminDashboard = () => {
         <div className="v7-modal-overlay">
           <div className="v7-modal">
             <div className="modal-header">
-              <h2>Add New Member</h2>
+              <h2>Add New Employee</h2>
               <button className="close-btn" onClick={() => setIsModalOpen(false)}><X size={20} /></button>
             </div>
             
@@ -195,31 +195,6 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="input-group">
-                <label>Access Role</label>
-                <div className="role-selector">
-                  <label className="radio-label">
-                    <input 
-                      type="radio" 
-                      name="role" 
-                      value="employee" 
-                      checked={formData.role === 'employee'} 
-                      onChange={() => setFormData({...formData, role: 'employee'})}
-                    />
-                    <span>Employee</span>
-                  </label>
-                  <label className="radio-label">
-                    <input 
-                      type="radio" 
-                      name="role" 
-                      value="admin" 
-                      checked={formData.role === 'admin'} 
-                      onChange={() => setFormData({...formData, role: 'admin'})}
-                    />
-                    <span>Admin</span>
-                  </label>
-                </div>
-              </div>
 
               <button className="submit-btn" disabled={loading}>
                 {loading ? 'Processing...' : 'Create Account'}

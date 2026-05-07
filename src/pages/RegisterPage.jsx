@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE } from '../api/client';
+import ConsentCheckbox from '../components/ConsentCheckbox';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -15,10 +16,18 @@ const RegisterPage = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [showConsentError, setShowConsentError] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    if (!consentChecked) {
+      setShowConsentError(true);
+      return setError('You must agree to the Terms & Conditions and Privacy Policy');
+    }
+
     if (formData.password !== formData.confirmPassword) return setError('Passwords do not match');
     
     setLoading(true);
@@ -147,7 +156,16 @@ const RegisterPage = () => {
               </div>
             </div>
 
-            <button className="submit-btn" disabled={loading}>
+            <ConsentCheckbox 
+              checked={consentChecked} 
+              onChange={(val) => {
+                setConsentChecked(val);
+                if (val) setShowConsentError(false);
+              }} 
+              error={showConsentError ? 'Please accept the terms to continue' : ''}
+            />
+
+            <button className="submit-btn" disabled={loading || !consentChecked}>
               {loading ? <span className="spinner"></span> : 'Register Organization'}
             </button>
           </form>
