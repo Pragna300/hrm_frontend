@@ -103,25 +103,25 @@ const EmployeeAttendancePanel = ({
               </div>
             </div>
           </div>
-          <div className="min-w-[220px]">
-            <div className="flex justify-end gap-5 items-center">
-              <div className="flex flex-col gap-2.5 text-right">
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-bold text-slate-800 mb-0.5">Time In</span>
-                  <span className="text-[14px] font-bold text-[#3174ad]">{lastIn}</span>
+          <div className="min-w-[270px]">
+            <div className="flex justify-end items-start gap-5">
+              <div className="flex items-start gap-6">
+                <div className="flex flex-col items-start">
+                  <span className="!text-[24px] !leading-none !font-semibold !text-[#2f4ed8]">{lastIn}</span>
+                  <span className="mt-1 text-[20px] leading-none font-semibold text-slate-300">{lastOut}</span>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-bold text-slate-800 mb-0.5">Time Out</span>
-                  <span className="text-[14px] font-bold text-[#f45b5b]">{lastOut}</span>
+                <div className="flex flex-col items-start gap-[9px] pt-[2px]">
+                  <span className="text-[26px] leading-none font-semibold text-slate-700">Time In</span>
+                  <span className="text-[26px] leading-none font-semibold text-slate-700">Time Out</span>
                 </div>
               </div>
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col gap-2">
                 <button
                   type="button"
-                  className={`px-6 py-2 rounded font-bold text-[11px] transition-all min-w-[80px] disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`!h-10 !min-w-[88px] rounded-md !px-4 !text-[13px] !font-semibold !transition-colors disabled:cursor-not-allowed ${
                     openSegment 
-                      ? "bg-white text-slate-300 border border-slate-200 cursor-not-allowed" 
-                      : "bg-white text-slate-400 border border-slate-300 hover:border-[#3174ad] hover:text-[#3174ad]"
+                      ? "!border !border-slate-200 !bg-slate-100 !text-slate-300"
+                      : "!border !border-slate-300 !bg-white !text-slate-500 hover:!border-slate-400 hover:!text-slate-600"
                   }`}
                   onClick={() => onTap('tap-in')}
                   disabled={actionLoading || !!openSegment}
@@ -130,10 +130,10 @@ const EmployeeAttendancePanel = ({
                 </button>
                 <button
                   type="button"
-                  className={`px-6 py-2 rounded font-bold text-[11px] transition-all min-w-[80px] disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`!h-10 !min-w-[88px] rounded-md !px-4 !text-[13px] !font-semibold !transition-colors disabled:cursor-not-allowed ${
                     !openSegment
-                      ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                      : "bg-[#f45b5b] text-white hover:bg-[#e04a4a]"
+                      ? "!bg-slate-100 !text-slate-400"
+                      : "!bg-[#ff5a66] !text-white shadow-sm hover:!bg-[#f14e5b]"
                   }`}
                   onClick={() => onTap('tap-out')}
                   disabled={actionLoading || !openSegment}

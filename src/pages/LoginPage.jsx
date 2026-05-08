@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { API_BASE, fetchMe, persistSessionUser } from '../api/client';
 
 const LoginPage = () => {
@@ -65,7 +65,7 @@ const LoginPage = () => {
           </form>
 
           <div className="v6-auth-footer">
-            New employee? <Link to="/register">Create Account</Link>
+            Employee account access is provided by your administrator.
           </div>
         </div>
       </div>

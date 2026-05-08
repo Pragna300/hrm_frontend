@@ -35,6 +35,16 @@ const DashboardLayout = () => {
   const [userData, setUserData] = useState(readStoredUser);
 
   useEffect(() => {
+    const isAdminRoute = location.pathname.startsWith('/admin/');
+    if (isAdminRoute && userData.role !== 'admin') {
+      navigate('/employee/overview', { replace: true });
+    }
+    if (location.pathname.startsWith('/employee/') && userData.role === 'admin') {
+      navigate('/admin/overview', { replace: true });
+    }
+  }, [location.pathname, userData.role, navigate]);
+
+  useEffect(() => {
     const token = getStoredToken();
     if (!token) {
       navigate('/login', { replace: true });
