@@ -7,6 +7,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminEmployeesPage = lazy(() => import('./pages/admin/AdminEmployeesPage'));
 const EmployeeDashboard = lazy(() => import('./pages/employee/EmployeeDashboard'));
 const TermsConditions = lazy(() => import('./pages/TermsConditions'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
@@ -63,7 +64,7 @@ function App() {
           <Route path="/org-chart" element={<PlaceholderPage />} />
           
           {/* Admin extra links */}
-          <Route path="/admin/employees" element={<PlaceholderPage />} />
+          <Route path="/admin/employees" element={<AdminEmployeesPage />} />
           <Route path="/admin/leave-settings" element={<PlaceholderPage />} />
           <Route path="/admin/payroll" element={<PlaceholderPage />} />
           <Route path="/admin/settings" element={<PlaceholderPage />} />

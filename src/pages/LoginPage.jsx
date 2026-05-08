@@ -96,6 +96,9 @@ const LoginPage = () => {
           </form>
 
           <div className="login-footer">
+            <p className="login-footer-muted">
+              Employee account access is provided by your administrator.
+            </p>
             <p>Want to register your company? <Link to="/register">Create Admin Account</Link></p>
             <div className="legal-links">
               <Link to="/terms">Terms & Conditions</Link>
@@ -227,6 +230,11 @@ const LoginPage = () => {
           margin-top: 32px;
           color: #64748b;
           font-size: 14px;
+        }
+        .login-footer-muted {
+          font-size: 13px;
+          line-height: 1.5;
+          color: #94a3b8;
         }
         .login-footer a {
           color: #3b82f6;
