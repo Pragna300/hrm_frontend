@@ -1,16 +1,27 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { API_BASE, fetchMe, persistSessionUser } from '../api/client';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.message) {
+      setSuccess(location.state.message);
+      // Clear state so message doesn't persist on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/auth/login`, {
@@ -28,11 +39,13 @@ const LoginPage = () => {
           persistSessionUser(fresh);
           role = fresh.role;
         } catch {
-          /* keep login payload if /me fails (e.g. brief network glitch) */
+          /* keep login payload if /me fails */
         }
         if (role === 'admin') navigate('/admin/overview');
         else navigate('/employee/overview');
-      } else setError(data.message);
+      } else {
+        setError(data.message);
+      }
     } catch {
       setError('Cannot reach server. Please check if backend is running.');
     } finally {
@@ -41,65 +54,227 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="v6-auth-page">
-      <div className="v6-auth-left">
-        <div className="v6-auth-box">
-          <div className="v6-auth-header">
-            <img src="/logo.png" alt="SHNOOR" style={{ height: '60px', marginBottom: '30px' }} />
-            <h1>Secure Portal</h1>
-            <p>Welcome to the Shnoor International Internal System. Please verify your credentials.</p>
+    <div className="login-page">
+      <div className="login-container">
+        <div className="login-card">
+          <div className="login-header">
+            <div className="logo-section">
+              <span className="logo-dot"></span>
+              <span className="logo-text">SHNOOR HR</span>
+            </div>
+            <h1>Welcome Back</h1>
+            <p>Access your dashboard with your professional credentials.</p>
           </div>
 
-          {error && <div className="v6-auth-error">{error}</div>}
+          {error && <div className="alert error">{error}</div>}
+          {success && <div className="alert success">{success}</div>}
 
-          <form className="v6-auth-form" onSubmit={handleSubmit}>
-            <div className="v6-input-group">
+          <form className="login-form" onSubmit={handleSubmit}>
+            <div className="input-group">
               <label>Work Email</label>
-              <input type="email" placeholder="name@shnoor.com" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+              <input 
+                type="email" 
+                placeholder="name@company.com" 
+                required 
+                value={formData.email} 
+                onChange={(e) => setFormData({...formData, email: e.target.value})} 
+              />
             </div>
-            <div className="v6-input-group">
+            <div className="input-group">
               <label>Password</label>
-              <input type="password" placeholder="••••••••" required value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
+              <input 
+                type="password" 
+                placeholder="••••••••" 
+                required 
+                value={formData.password} 
+                onChange={(e) => setFormData({...formData, password: e.target.value})} 
+              />
             </div>
-            <button className="v6-btn-primary" disabled={loading}>{loading ? 'Authenticating...' : 'Sign In'}</button>
+            <button className="submit-btn" disabled={loading}>
+              {loading ? <span className="spinner"></span> : 'Sign In'}
+            </button>
           </form>
 
-          <div className="v6-auth-footer">
-            Employee account access is provided by your administrator.
+          <div className="login-footer">
+            <p className="login-footer-muted">
+              Employee account access is provided by your administrator.
+            </p>
+            <p>Want to register your company? <Link to="/register">Create Admin Account</Link></p>
+            <div className="legal-links">
+              <Link to="/terms">Terms & Conditions</Link>
+              <span className="separator">•</span>
+              <Link to="/privacy">Privacy Policy</Link>
+              <span className="separator">•</span>
+              <Link to="/cookies">Cookie Policy</Link>
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="v6-auth-right">
-        <div className="v6-brand-overlay">
-          <h2>Access <br/>Excellence</h2>
-          <div className="v6-brand-line"></div>
-          <p>SHNOOR International Human Resource & Management Ecosystem.</p>
         </div>
       </div>
 
       <style>{`
-        .v6-auth-page { display: flex; height: 100vh; font-family: 'Inter', sans-serif; background: #fff; overflow: hidden; }
-        .v6-auth-left { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px; }
-        .v6-auth-box { width: 100%; max-width: 400px; }
-        .v6-auth-header { margin-bottom: 40px; }
-        .v6-auth-header h1 { font-size: 28px; font-weight: 900; color: #1a365d; margin-bottom: 10px; }
-        .v6-auth-header p { font-size: 15px; color: #718096; line-height: 1.5; }
-        .v6-auth-error { background: #fff5f5; color: #c53030; padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 25px; border: 1px solid #fed7d7; }
-        .v6-auth-form { display: flex; flex-direction: column; gap: 20px; }
-        .v6-input-group { display: flex; flex-direction: column; gap: 8px; }
-        .v6-input-group label { font-size: 13px; font-weight: 700; color: #2d3748; }
-        .v6-input-group input { padding: 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 15px; transition: 0.2s; background: #f8fafc; }
-        .v6-input-group input:focus { outline: none; border-color: #3174ad; box-shadow: 0 0 0 3px rgba(49, 116, 173, 0.1); background: #fff; }
-        .v6-btn-primary { background: #3174ad; color: white; border: none; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 10px; }
-        .v6-btn-primary:hover { background: #2b6cb0; transform: translateY(-1px); }
-        .v6-auth-footer { text-align: center; margin-top: 30px; font-size: 15px; color: #718096; }
-        .v6-auth-footer a { color: #3174ad; font-weight: 800; text-decoration: none; }
-        .v6-auth-right { flex: 1.2; background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); display: flex; align-items: center; justify-content: center; position: relative; }
-        .v6-brand-overlay { text-align: left; padding: 80px; color: white; }
-        .v6-brand-overlay h2 { font-size: 64px; font-weight: 900; line-height: 1; margin-bottom: 30px; }
-        .v6-brand-line { width: 80px; height: 6px; background: #f3a633; margin-bottom: 30px; border-radius: 3px; }
-        .v6-brand-overlay p { font-size: 20px; color: #a0aec0; max-width: 400px; }
-        @media (max-width: 900px) { .v6-auth-right { display: none; } }
+        .login-page {
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #f8fafc;
+          background-image: radial-gradient(#cbd5e1 0.5px, transparent 0.5px);
+          background-size: 24px 24px;
+          font-family: 'Inter', sans-serif;
+        }
+        .login-container {
+          width: 100%;
+          max-width: 450px;
+          padding: 20px;
+        }
+        .login-card {
+          background: white;
+          padding: 48px;
+          border-radius: 24px;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+          border: 1px solid #e2e8f0;
+        }
+        .login-header {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+        .logo-section {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 24px;
+        }
+        .logo-dot {
+          width: 12px;
+          height: 12px;
+          background: #3b82f6;
+          border-radius: 50%;
+        }
+        .logo-text {
+          font-weight: 800;
+          font-size: 20px;
+          color: #1e293b;
+        }
+        .login-header h1 {
+          font-size: 28px;
+          font-weight: 800;
+          color: #0f172a;
+          margin-bottom: 10px;
+        }
+        .login-header p {
+          color: #64748b;
+          font-size: 15px;
+          line-height: 1.5;
+        }
+        .alert {
+          padding: 14px;
+          border-radius: 12px;
+          font-size: 14px;
+          margin-bottom: 24px;
+          text-align: center;
+        }
+        .alert.error { background: #fef2f2; border: 1px solid #fee2e2; color: #b91c1c; }
+        .alert.success { background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; }
+        .login-form {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+        .input-group {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .input-group label {
+          font-size: 13px;
+          font-weight: 600;
+          color: #475569;
+        }
+        .input-group input {
+          padding: 12px 16px;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          font-size: 15px;
+          background: #fcfdfe;
+          transition: all 0.2s;
+        }
+        .input-group input:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+          background: white;
+        }
+        .submit-btn {
+          background: #1e293b;
+          color: white;
+          padding: 16px;
+          border-radius: 12px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          border: none;
+          margin-top: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .submit-btn:hover {
+          background: #0f172a;
+          transform: translateY(-1px);
+        }
+        .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .login-footer {
+          text-align: center;
+          margin-top: 32px;
+          color: #64748b;
+          font-size: 14px;
+        }
+        .login-footer-muted {
+          font-size: 13px;
+          line-height: 1.5;
+          color: #94a3b8;
+        }
+        .login-footer a {
+          color: #3b82f6;
+          font-weight: 700;
+          text-decoration: none;
+        }
+        .login-footer p {
+          margin-bottom: 12px;
+        }
+        .legal-links {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          margin-top: 16px;
+          padding-top: 16px;
+          border-top: 1px solid #f1f5f9;
+        }
+        .legal-links a {
+          color: #64748b;
+          font-weight: 500;
+          font-size: 13px;
+        }
+        .legal-links a:hover {
+          color: #3b82f6;
+          text-decoration: underline;
+        }
+        .separator {
+          color: #cbd5e1;
+          font-size: 10px;
+        }
+        .spinner {
+          width: 20px;
+          height: 20px;
+          border: 2px solid rgba(255,255,255,0.3);
+          border-top-color: white;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );

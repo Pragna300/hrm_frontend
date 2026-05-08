@@ -135,11 +135,11 @@ const LandingPage = () => {
           <div className="v6-footer-bottom">
             <p>© 2026 SHNOOR International LLC. Designed for Excellence.</p>
             <div className="v6-footer-legal">
-              <a href="#privacy">Privacy Policy</a>
+              <Link to="/privacy">Privacy Policy</Link>
               <span className="v6-f-sep">|</span>
-              <a href="#terms">Terms & Conditions</a>
+              <Link to="/terms">Terms & Conditions</Link>
               <span className="v6-f-sep">|</span>
-              <a href="#cookies">Cookie Policy</a>
+              <Link to="/cookies">Cookie Policy</Link>
             </div>
           </div>
         </div>

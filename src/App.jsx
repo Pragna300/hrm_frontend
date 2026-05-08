@@ -9,6 +9,9 @@ const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminEmployeesPage = lazy(() => import('./pages/admin/AdminEmployeesPage'));
 const EmployeeDashboard = lazy(() => import('./pages/employee/EmployeeDashboard'));
+const TermsConditions = lazy(() => import('./pages/TermsConditions'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const CookiePolicy = lazy(() => import('./pages/CookiePolicy'));
 
 // Simple placeholder for "Under Construction" modules
 const PlaceholderPage = () => (
@@ -39,6 +42,9 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/terms" element={<TermsConditions />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/cookies" element={<CookiePolicy />} />
 
         {/* Dashboard Routes */}
         <Route element={<DashboardLayout />}>
