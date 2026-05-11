@@ -8,7 +8,10 @@ const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminEmployeesPage = lazy(() => import('./pages/admin/AdminEmployeesPage'));
+const AdminTaskList = lazy(() => import('./pages/admin/AdminTaskList'));
+const AdminTaskCreate = lazy(() => import('./pages/admin/AdminTaskCreate'));
 const EmployeeDashboard = lazy(() => import('./pages/employee/EmployeeDashboard'));
+const EmployeeTasks = lazy(() => import('./pages/employee/EmployeeTasks'));
 const TermsConditions = lazy(() => import('./pages/TermsConditions'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const CookiePolicy = lazy(() => import('./pages/CookiePolicy'));
@@ -65,6 +68,12 @@ function App() {
           
           {/* Admin extra links */}
           <Route path="/admin/employees" element={<AdminEmployeesPage />} />
+          <Route path="/admin/tasks" element={<AdminTaskList />} />
+          <Route path="/admin/tasks/create" element={<AdminTaskCreate />} />
+          
+          {/* Employee extra links */}
+          <Route path="/employee/tasks" element={<EmployeeTasks />} />
+
           <Route path="/admin/leave-settings" element={<PlaceholderPage />} />
           <Route path="/admin/payroll" element={<PlaceholderPage />} />
           <Route path="/admin/settings" element={<PlaceholderPage />} />
