@@ -78,7 +78,7 @@ const DashboardLayout = () => {
     { name: 'Documents', icon: <FileText size={18} />, path: '/docs' },
     { name: 'Thanks', icon: <Heart size={18} />, path: '/thanks' },
     { name: 'Planner', icon: <Calendar size={18} />, path: '/planner' },
-    { name: 'Tasks', icon: <CheckSquare size={18} />, path: '/tasks' },
+    { name: 'Tasks', icon: <CheckSquare size={18} />, path: userData.role === 'admin' ? '/admin/tasks' : '/employee/tasks' },
     { name: 'Authorizations', icon: <ShieldCheck size={18} />, path: '/auths' },
     { name: 'Reports', icon: <BarChart2 size={18} />, path: '/reports' },
     { name: 'Notifications', icon: <Bell size={18} />, path: '/notifications' },
