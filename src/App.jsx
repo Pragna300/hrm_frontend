@@ -1,36 +1,52 @@
 import { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import RoleGuard from './components/auth/RoleGuard';
 import './App.css';
 
-const LandingPage = lazy(() => import('./pages/LandingPage'));
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage'));
-const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const AdminEmployeesPage = lazy(() => import('./pages/admin/AdminEmployeesPage'));
-const AdminTaskList = lazy(() => import('./pages/admin/AdminTaskList'));
-const AdminTaskCreate = lazy(() => import('./pages/admin/AdminTaskCreate'));
-const EmployeeDashboard = lazy(() => import('./pages/employee/EmployeeDashboard'));
-const EmployeeTasks = lazy(() => import('./pages/employee/EmployeeTasks'));
+// Public
+const LandingPage     = lazy(() => import('./pages/LandingPage'));
+const LoginPage       = lazy(() => import('./pages/LoginPage'));
+const RegisterPage    = lazy(() => import('./pages/RegisterPage'));
 const TermsConditions = lazy(() => import('./pages/TermsConditions'));
-const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
-const CookiePolicy = lazy(() => import('./pages/CookiePolicy'));
+const PrivacyPolicy   = lazy(() => import('./pages/PrivacyPolicy'));
+const CookiePolicy    = lazy(() => import('./pages/CookiePolicy'));
 
-// Simple placeholder for "Under Construction" modules
-const PlaceholderPage = () => (
-  <div style={{ 
-    padding: '40px', 
-    textAlign: 'center', 
-    color: '#a0aec0', 
-    background: '#fff', 
-    borderRadius: '12px',
-    border: '1px solid #eef2f6',
-    marginTop: '20px'
-  }}>
-    <h2 style={{ color: '#1a365d', marginBottom: '10px' }}>Module Under Development</h2>
-    <p>This feature is part of the next implementation phase.</p>
-  </div>
-);
+// Layout
+const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
+
+// Owner (super_admin)
+const OwnerOverview  = lazy(() => import('./pages/owner/OwnerOverview'));
+const OwnerCompanies = lazy(() => import('./pages/owner/OwnerCompanies'));
+const OwnerPlans     = lazy(() => import('./pages/owner/OwnerPlans'));
+const OwnerInvoices  = lazy(() => import('./pages/owner/OwnerInvoices'));
+
+// Company (manager / hr)
+const CompanyOverview      = lazy(() => import('./pages/company/CompanyOverview'));
+const CompanyEmployeesPage = lazy(() => import('./pages/company/employees/CompanyEmployeesPage'));
+const DepartmentsPage      = lazy(() => import('./pages/company/structure/DepartmentsPage'));
+const LocationsPage        = lazy(() => import('./pages/company/structure/LocationsPage'));
+const ShiftsPage           = lazy(() => import('./pages/company/structure/ShiftsPage'));
+const CompanyLeavesPage    = lazy(() => import('./pages/company/CompanyLeavesPage'));
+const CompanyPayrollPage   = lazy(() => import('./pages/company/CompanyPayrollPage'));
+const CompanyHolidaysPage  = lazy(() => import('./pages/company/CompanyHolidaysPage'));
+const CompanyAnnouncementsPage = lazy(() => import('./pages/company/CompanyAnnouncementsPage'));
+const CompanyBillingPage   = lazy(() => import('./pages/company/CompanyBillingPage'));
+const CompanySettingsPage  = lazy(() => import('./pages/company/CompanySettingsPage'));
+
+// Team lead
+const TeamOverviewPage = lazy(() => import('./pages/team/TeamOverviewPage'));
+
+// Employee
+const EmployeeDashboard = lazy(() => import('./pages/employee/EmployeeDashboard'));
+const EmployeeLeavesPage    = lazy(() => import('./pages/employee/EmployeeLeavesPage'));
+const EmployeePayslipsPage  = lazy(() => import('./pages/employee/EmployeePayslipsPage'));
+const EmployeeAttendanceHistoryPage = lazy(() => import('./pages/employee/EmployeeAttendanceHistoryPage'));
+const EmployeeAnnouncementsPage = lazy(() => import('./pages/employee/EmployeeAnnouncementsPage'));
+const EmployeeNewsPage = lazy(() => import('./pages/employee/EmployeeNewsPage'));
+const EmployeeMePage = lazy(() => import('./pages/employee/EmployeeMePage'));
+const EmployeeDocumentsPage = lazy(() => import('./pages/employee/EmployeeDocumentsPage'));
+const EmployeeTasksPage = lazy(() => import('./pages/employee/EmployeeTasksPage'));
+const EmployeeOrgChartPage = lazy(() => import('./pages/employee/EmployeeOrgChartPage'));
 
 const PageLoader = () => (
   <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -38,45 +54,59 @@ const PageLoader = () => (
   </div>
 );
 
+const COMPANY_ROLES = ['manager', 'hr'];
+const APPROVER_ROLES = ['manager', 'hr', 'team_lead'];
+const ALL_EMPLOYEE_ROLES = ['manager', 'hr', 'team_lead', 'employee'];
+
 function App() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
+        {/* Public */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/terms" element={<TermsConditions />} />
+        <Route path="/terms"   element={<TermsConditions />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/cookies" element={<CookiePolicy />} />
 
-        {/* Dashboard Routes */}
+        {/* Authenticated */}
         <Route element={<DashboardLayout />}>
-          <Route path="/admin/overview" element={<AdminDashboard />} />
-          <Route path="/employee/overview" element={<EmployeeDashboard />} />
-          
-          {/* Catch-all for other sidebar links so they don't redirect */}
-          <Route path="/news" element={<PlaceholderPage />} />
-          <Route path="/me" element={<PlaceholderPage />} />
-          <Route path="/docs" element={<PlaceholderPage />} />
-          <Route path="/thanks" element={<PlaceholderPage />} />
-          <Route path="/planner" element={<PlaceholderPage />} />
-          <Route path="/tasks" element={<PlaceholderPage />} />
-          <Route path="/auths" element={<PlaceholderPage />} />
-          <Route path="/reports" element={<PlaceholderPage />} />
-          <Route path="/notifications" element={<PlaceholderPage />} />
-          <Route path="/org-chart" element={<PlaceholderPage />} />
-          
-          {/* Admin extra links */}
-          <Route path="/admin/employees" element={<AdminEmployeesPage />} />
-          <Route path="/admin/tasks" element={<AdminTaskList />} />
-          <Route path="/admin/tasks/create" element={<AdminTaskCreate />} />
-          
-          {/* Employee extra links */}
-          <Route path="/employee/tasks" element={<EmployeeTasks />} />
+          {/* Super admin */}
+          <Route path="/owner/overview"  element={<RoleGuard allowed="super_admin"><OwnerOverview /></RoleGuard>} />
+          <Route path="/owner/companies" element={<RoleGuard allowed="super_admin"><OwnerCompanies /></RoleGuard>} />
+          <Route path="/owner/plans"     element={<RoleGuard allowed="super_admin"><OwnerPlans /></RoleGuard>} />
+          <Route path="/owner/invoices"  element={<RoleGuard allowed="super_admin"><OwnerInvoices /></RoleGuard>} />
 
-          <Route path="/admin/leave-settings" element={<PlaceholderPage />} />
-          <Route path="/admin/payroll" element={<PlaceholderPage />} />
-          <Route path="/admin/settings" element={<PlaceholderPage />} />
+          {/* Company-level (manager + hr) */}
+          <Route path="/company/overview"      element={<RoleGuard allowed={COMPANY_ROLES}><CompanyOverview /></RoleGuard>} />
+          <Route path="/company/employees"     element={<RoleGuard allowed={COMPANY_ROLES}><CompanyEmployeesPage /></RoleGuard>} />
+          <Route path="/company/departments"   element={<RoleGuard allowed={COMPANY_ROLES}><DepartmentsPage /></RoleGuard>} />
+          <Route path="/company/locations"     element={<RoleGuard allowed={COMPANY_ROLES}><LocationsPage /></RoleGuard>} />
+          <Route path="/company/shifts"        element={<RoleGuard allowed={COMPANY_ROLES}><ShiftsPage /></RoleGuard>} />
+          <Route path="/company/leaves"        element={<RoleGuard allowed={APPROVER_ROLES}><CompanyLeavesPage /></RoleGuard>} />
+          <Route path="/company/payroll"       element={<RoleGuard allowed={COMPANY_ROLES}><CompanyPayrollPage /></RoleGuard>} />
+          <Route path="/company/holidays"      element={<RoleGuard allowed={COMPANY_ROLES}><CompanyHolidaysPage /></RoleGuard>} />
+          <Route path="/company/announcements" element={<RoleGuard allowed={COMPANY_ROLES}><CompanyAnnouncementsPage /></RoleGuard>} />
+          <Route path="/company/billing"       element={<RoleGuard allowed="manager"><CompanyBillingPage /></RoleGuard>} />
+          <Route path="/company/settings"      element={<RoleGuard allowed="manager"><CompanySettingsPage /></RoleGuard>} />
+
+          {/* Team lead */}
+          <Route path="/team/overview" element={<RoleGuard allowed="team_lead"><TeamOverviewPage /></RoleGuard>} />
+          <Route path="/team/members"  element={<RoleGuard allowed="team_lead"><TeamOverviewPage /></RoleGuard>} />
+          <Route path="/team/leaves"   element={<RoleGuard allowed="team_lead"><CompanyLeavesPage /></RoleGuard>} />
+
+          {/* Employee (also valid for hr/manager/team_lead since they all have an employee profile) */}
+          <Route path="/employee/overview"     element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeDashboard /></RoleGuard>} />
+          <Route path="/employee/leaves"       element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeLeavesPage /></RoleGuard>} />
+          <Route path="/employee/payslips"     element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeePayslipsPage /></RoleGuard>} />
+          <Route path="/employee/attendance"   element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeAttendanceHistoryPage /></RoleGuard>} />
+          <Route path="/employee/announcements" element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeAnnouncementsPage /></RoleGuard>} />
+          <Route path="/employee/news"       element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeNewsPage /></RoleGuard>} />
+          <Route path="/employee/me"         element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeMePage /></RoleGuard>} />
+          <Route path="/employee/documents"  element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeDocumentsPage /></RoleGuard>} />
+          <Route path="/employee/tasks"      element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeTasksPage /></RoleGuard>} />
+          <Route path="/employee/org-chart"  element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeOrgChartPage /></RoleGuard>} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

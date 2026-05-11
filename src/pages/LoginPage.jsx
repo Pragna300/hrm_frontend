@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { API_BASE, fetchMe, persistSessionUser } from '../api/client';
+import { API_BASE, fetchMe, persistSession } from '../api/client';
+import { defaultPathForRole } from '../config/navigation';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -31,18 +32,16 @@ const LoginPage = () => {
       });
       const data = await res.json();
       if (data.success) {
-        localStorage.setItem('shnoor_token', data.token);
-        persistSessionUser(data.user);
+        persistSession(data.token, data.user);
         let role = data.user.role;
         try {
           const fresh = await fetchMe();
-          persistSessionUser(fresh);
+          persistSession(data.token, fresh);
           role = fresh.role;
         } catch {
           /* keep login payload if /me fails */
         }
-        if (role === 'admin') navigate('/admin/overview');
-        else navigate('/employee/overview');
+        navigate(defaultPathForRole(role));
       } else {
         setError(data.message);
       }
@@ -60,10 +59,10 @@ const LoginPage = () => {
           <div className="login-header">
             <div className="logo-section">
               <span className="logo-dot"></span>
-              <span className="logo-text">SHNOOR HR</span>
+              <span className="logo-text">HR Portal</span>
             </div>
-            <h1>Welcome Back</h1>
-            <p>Access your dashboard with your professional credentials.</p>
+            <h1>Welcome back</h1>
+            <p>Sign in to access your company workspace.</p>
           </div>
 
           {error && <div className="alert error">{error}</div>}
@@ -97,9 +96,9 @@ const LoginPage = () => {
 
           <div className="login-footer">
             <p className="login-footer-muted">
-              Employee account access is provided by your administrator.
+              Employee accounts are created by your company manager / HR.
             </p>
-            <p>Want to register your company? <Link to="/register">Create Admin Account</Link></p>
+            <p>New here? <Link to="/register">Register your company</Link></p>
             <div className="legal-links">
               <Link to="/terms">Terms & Conditions</Link>
               <span className="separator">•</span>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Inbox } from 'lucide-react';
 import { authFetch, fetchMe, persistSessionUser } from '../../api/client';
 import EmployeeAttendancePanel from './EmployeeAttendancePanel';
@@ -9,9 +9,7 @@ import { ClipboardList } from 'lucide-react';
 const EmployeeDashboard = () => {
   const [todayLog, setTodayLog] = useState(null);
   const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [error, setError] = useState('');
   const [now, setNow] = useState(new Date());
   const [user, setUser] = useState(() => {
     try {
@@ -27,11 +25,8 @@ const EmployeeDashboard = () => {
       const res = await authFetch('/attendance/today');
       const data = await res.json();
       if (data.success) setTodayLog(data.data);
-      else if (res.status === 403) setError(data.message || 'Attendance unavailable');
     } catch {
-      setError('Cannot reach server');
-    } finally {
-      setLoading(false);
+      // ignore — dashboard still renders
     }
   }
 
@@ -80,14 +75,12 @@ const EmployeeDashboard = () => {
 
   async function handleTap(action) {
     setActionLoading(true);
-    setError('');
     try {
       const res = await authFetch(`/attendance/${action}`, { method: 'POST' });
       const data = await res.json();
       if (data.success) await fetchToday();
-      else setError(data.message);
     } catch {
-      setError('Cannot reach server');
+      // ignore
     } finally {
       setActionLoading(false);
     }
