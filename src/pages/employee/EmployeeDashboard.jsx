@@ -2,9 +2,13 @@ import { useState, useEffect } from 'react';
 import { Inbox } from 'lucide-react';
 import { authFetch, fetchMe, persistSessionUser } from '../../api/client';
 import EmployeeAttendancePanel from './EmployeeAttendancePanel';
+import DashboardCards from '../../components/DashboardCards';
+import { Link } from 'react-router-dom';
+import { ClipboardList } from 'lucide-react';
 
 const EmployeeDashboard = () => {
   const [todayLog, setTodayLog] = useState(null);
+  const [stats, setStats] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [now, setNow] = useState(new Date());
   const [user, setUser] = useState(() => {
@@ -26,6 +30,31 @@ const EmployeeDashboard = () => {
     }
   }
 
+  const [recentTasks, setRecentTasks] = useState([]);
+  const [loadingTasks, setLoadingTasks] = useState(true);
+
+  async function fetchStats() {
+    try {
+      const res = await authFetch('/tasks/stats');
+      const data = await res.json();
+      if (data.success) setStats(data.data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function fetchRecentTasks() {
+    try {
+      const res = await authFetch('/tasks/my-tasks');
+      const data = await res.json();
+      if (data.success) setRecentTasks(data.data.slice(0, 3));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingTasks(false);
+    }
+  }
+
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
 
@@ -35,7 +64,9 @@ const EmployeeDashboard = () => {
         setUser(u);
         persistSessionUser(u);
       }),
-      fetchToday()
+      fetchToday(),
+      fetchStats(),
+      fetchRecentTasks()
     ]).catch(() => {});
 
     return () => clearInterval(t);
@@ -93,6 +124,11 @@ const EmployeeDashboard = () => {
               <DetailRow label="Personal Email" value={user.personalEmail || '—'} isEmail isEditable />
               <DetailRow label="Personal Mobile" value={user.personalPhone || '+91 7032320377'} isEditable />
             </div>
+
+            <Link to="/employee/tasks" className="mt-6 flex items-center justify-center gap-2 bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-900 transition-all">
+               <ClipboardList size={18} />
+               <span>View My Tasks</span>
+            </Link>
           </div>
         </aside>
 
@@ -105,7 +141,39 @@ const EmployeeDashboard = () => {
             onTap={handleTap}
           />
 
+          <DashboardCards stats={stats} role="employee" />
+
           <div className="v7-widget-grid">
+            <div className="v7-card v7-widget-card md:col-span-2">
+              <div className="v7-widget-header flex justify-between items-center mb-4">
+                <h3 className="m-0">Recent Assignments</h3>
+                <Link to="/employee/tasks" className="text-xs font-black uppercase text-blue-600 hover:underline">View All</Link>
+              </div>
+              <div className="v7-widget-body">
+                {loadingTasks ? (
+                   <p className="text-xs text-slate-400">Loading tasks...</p>
+                ) : recentTasks.length === 0 ? (
+                   <p className="text-xs text-slate-400 italic">No tasks assigned recently.</p>
+                ) : (
+                   <div className="space-y-3">
+                     {recentTasks.map(t => (
+                       <div key={t.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                         <div>
+                            <p className="text-xs font-black text-blue-600 uppercase tracking-tighter">{t.subject}</p>
+                            <p className="text-sm font-bold text-slate-800">{t.taskName}</p>
+                         </div>
+                         <span className={`text-[10px] font-black px-2 py-1 rounded-md ${
+                           t.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                         }`}>
+                           {t.status}
+                         </span>
+                       </div>
+                     ))}
+                   </div>
+                )}
+              </div>
+            </div>
+
             <div className="v7-card v7-widget-card">
               <div className="v7-widget-header">
                 <h3>Average Daily Working Hours</h3>
