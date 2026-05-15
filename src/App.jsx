@@ -10,6 +10,8 @@ const RegisterPage    = lazy(() => import('./pages/RegisterPage'));
 const TermsConditions = lazy(() => import('./pages/TermsConditions'));
 const PrivacyPolicy   = lazy(() => import('./pages/PrivacyPolicy'));
 const CookiePolicy    = lazy(() => import('./pages/CookiePolicy'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage  = lazy(() => import('./pages/ResetPasswordPage'));
 
 // Layout
 const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
@@ -69,6 +71,8 @@ function App() {
         <Route path="/terms"   element={<TermsConditions />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/cookies" element={<CookiePolicy />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Authenticated */}
         <Route element={<DashboardLayout />}>

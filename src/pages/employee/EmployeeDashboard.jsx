@@ -104,25 +104,25 @@ const EmployeeDashboard = () => {
                 </div>
               </div>
               <h2 className="v7-user-name">{user.name}</h2>
-              <p className="v7-user-title">{user.designation || 'Software Engineer Intern'}</p>
+              <p className="v7-user-title">{user.designation || 'Employee'}</p>
               <div className="v7-user-tags">
-                <span className="v7-tag">Remote</span>
-                <span className="v7-tag">Information Technology</span>
+                <span className="v7-tag">{user.employmentType ? user.employmentType.replace('_', ' ') : 'Full Time'}</span>
+                {user.organizationSector && <span className="v7-tag">{user.organizationSector}</span>}
               </div>
             </div>
 
             <div className="v7-profile-details">
-              <DetailRow label="Employee ID" value={user.employeeCode || 'SH100238'} />
-              <DetailRow label="Company" value={user.organizationName || 'SHNOOR International LLC'} />
-              <DetailRow label="Date Hired" value={user.dateHired ? new Date(user.dateHired).toLocaleDateString('en-GB') : '31/03/2026'} />
-              <DetailRow label="Contracted Hours" value="40.00(FTE:1.00)" />
+              <DetailRow label="Employee ID" value={user.employeeCode || '—'} />
+              <DetailRow label="Company" value={user.organizationName || '—'} />
+              <DetailRow label="Date Hired" value={user.dateHired ? new Date(user.dateHired).toLocaleDateString('en-GB') : '—'} />
+              <DetailRow label="Contracted Hours" value={user.contractedHoursPerWeek ? `${user.contractedHoursPerWeek} (FTE: ${user.fte || '1.00'})` : '—'} />
               
               <div className="v7-detail-divider"></div>
 
               <DetailRow label="Official Email" value={user.workEmail || user.email || '—'} isEmail />
-              <DetailRow label="Work Phone" value={user.workPhone || '+91 7032320377'} />
+              <DetailRow label="Work Phone" value={user.workPhone || '—'} />
               <DetailRow label="Personal Email" value={user.personalEmail || '—'} isEmail isEditable />
-              <DetailRow label="Personal Mobile" value={user.personalPhone || '+91 7032320377'} isEditable />
+              <DetailRow label="Personal Mobile" value={user.personalPhone || '—'} isEditable />
             </div>
 
             <Link to="/employee/tasks" className="mt-6 flex items-center justify-center gap-2 bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-900 transition-all">
@@ -181,10 +181,10 @@ const EmployeeDashboard = () => {
               <div className="v7-widget-body">
                 <div className="v7-progress-container">
                   <div className="v7-progress-label">
-                    <span>{user.name} - {user.designation || 'Software Engineer Intern'} (05:39/8:00)</span>
+                    <span>{user.name} - {user.designation || 'Employee'}</span>
                   </div>
                   <div className="v7-progress-bar">
-                    <div className="v7-progress-fill blue" style={{ width: '70%' }}></div>
+                    <div className="v7-progress-fill blue" style={{ width: '0%' }}></div>
                   </div>
                 </div>
               </div>
@@ -197,10 +197,10 @@ const EmployeeDashboard = () => {
               <div className="v7-widget-body">
                 <div className="v7-progress-container">
                   <div className="v7-progress-label">
-                    <span>{user.name} - {user.designation || 'Software Engineer Intern'} (100%)</span>
+                    <span>{user.name} - {user.designation || 'Employee'}</span>
                   </div>
                   <div className="v7-progress-bar">
-                    <div className="v7-progress-fill green" style={{ width: '100%' }}></div>
+                    <div className="v7-progress-fill green" style={{ width: '0%' }}></div>
                   </div>
                 </div>
               </div>

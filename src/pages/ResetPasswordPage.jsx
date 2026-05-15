@@ -1,47 +1,48 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { API_BASE, fetchMe, persistSession } from '../api/client';
-import { defaultPathForRole } from '../config/navigation';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { API_BASE } from '../api/client';
 
-const LoginPage = () => {
+const ResetPasswordPage = () => {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const token = searchParams.get('token');
+  
+  const [formData, setFormData] = useState({ password: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (location.state?.message) {
-      setSuccess(location.state.message);
-      // Clear state so message doesn't persist on refresh
-      window.history.replaceState({}, document.title);
+    if (!token) {
+      setError('Invalid or missing reset token.');
     }
-  }, [location]);
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+
+    if (formData.password !== formData.confirmPassword) {
+      return setError('Passwords do not match');
+    }
+    if (formData.password.length < 6) {
+      return setError('Password must be at least 6 characters');
+    }
+
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/auth/login`, {
+      const res = await fetch(`${API_BASE}/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ token, password: formData.password }),
       });
       const data = await res.json();
       if (data.success) {
-        persistSession(data.token, data.user);
-        let role = data.user.role;
-        try {
-          const fresh = await fetchMe();
-          persistSession(data.token, fresh);
-          role = fresh.role;
-        } catch {
-          /* keep login payload if /me fails */
-        }
-        navigate(defaultPathForRole(role));
+        setSuccess(data.message);
+        setTimeout(() => {
+          navigate('/login', { state: { message: 'Password reset successfully. Please log in.' } });
+        }, 2000);
       } else {
         setError(data.message);
       }
@@ -61,54 +62,45 @@ const LoginPage = () => {
               <span className="logo-dot"></span>
               <span className="logo-text">HR Portal</span>
             </div>
-            <h1>Welcome back</h1>
-            <p>Sign in to access your company workspace.</p>
+            <h1>Set new password</h1>
+            <p>Please enter your new password below.</p>
           </div>
 
           {error && <div className="alert error">{error}</div>}
           {success && <div className="alert success">{success}</div>}
 
-          <form className="login-form" onSubmit={handleSubmit}>
-            <div className="input-group">
-              <label>Work Email</label>
-              <input 
-                type="email" 
-                placeholder="name@company.com" 
-                required 
-                value={formData.email} 
-                onChange={(e) => setFormData({...formData, email: e.target.value})} 
-              />
-            </div>
-            <div className="input-group">
-              <div className="label-row">
-                <label>Password</label>
-                <Link to="/forgot-password" style={{ fontSize: '12px', fontWeight: '600' }}>Forgot password?</Link>
+          {!success && (
+            <form className="login-form" onSubmit={handleSubmit}>
+              <div className="input-group">
+                <label>New Password</label>
+                <input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  required 
+                  disabled={!token}
+                  value={formData.password} 
+                  onChange={(e) => setFormData({...formData, password: e.target.value})} 
+                />
               </div>
-              <input 
-                type="password" 
-                placeholder="••••••••" 
-                required 
-                value={formData.password} 
-                onChange={(e) => setFormData({...formData, password: e.target.value})} 
-              />
-            </div>
-            <button className="submit-btn" disabled={loading}>
-              {loading ? <span className="spinner"></span> : 'Sign In'}
-            </button>
-          </form>
+              <div className="input-group">
+                <label>Confirm New Password</label>
+                <input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  required 
+                  disabled={!token}
+                  value={formData.confirmPassword} 
+                  onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})} 
+                />
+              </div>
+              <button className="submit-btn" disabled={loading || !token}>
+                {loading ? <span className="spinner"></span> : 'Reset Password'}
+              </button>
+            </form>
+          )}
 
           <div className="login-footer">
-            <p className="login-footer-muted">
-              Employee accounts are created by your company manager / HR.
-            </p>
-            <p>New here? <Link to="/register">Register your company</Link></p>
-            <div className="legal-links">
-              <Link to="/terms">Terms & Conditions</Link>
-              <span className="separator">•</span>
-              <Link to="/privacy">Privacy Policy</Link>
-              <span className="separator">•</span>
-              <Link to="/cookies">Cookie Policy</Link>
-            </div>
+            <p>Back to <Link to="/login">Sign In</Link></p>
           </div>
         </div>
       </div>
@@ -188,11 +180,6 @@ const LoginPage = () => {
           flex-direction: column;
           gap: 8px;
         }
-        .label-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
         .input-group label {
           font-size: 13px;
           font-weight: 600;
@@ -238,40 +225,10 @@ const LoginPage = () => {
           color: #64748b;
           font-size: 14px;
         }
-        .login-footer-muted {
-          font-size: 13px;
-          line-height: 1.5;
-          color: #94a3b8;
-        }
         .login-footer a {
           color: #3b82f6;
           font-weight: 700;
           text-decoration: none;
-        }
-        .login-footer p {
-          margin-bottom: 12px;
-        }
-        .legal-links {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-          margin-top: 16px;
-          padding-top: 16px;
-          border-top: 1px solid #f1f5f9;
-        }
-        .legal-links a {
-          color: #64748b;
-          font-weight: 500;
-          font-size: 13px;
-        }
-        .legal-links a:hover {
-          color: #3b82f6;
-          text-decoration: underline;
-        }
-        .separator {
-          color: #cbd5e1;
-          font-size: 10px;
         }
         .spinner {
           width: 20px;
@@ -287,4 +244,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default ResetPasswordPage;
