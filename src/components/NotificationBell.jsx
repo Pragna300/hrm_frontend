@@ -272,6 +272,11 @@ function NotificationBell() {
         .hr-notification-toast { position: fixed; right: 18px; bottom: 18px; width: 310px; background: #111827; color: #f8fafc; border-radius: 14px; display: flex; align-items: center; gap: 12px; padding: 14px 16px; box-shadow: 0 20px 54px rgba(15,23,42,.2); z-index: 50; }
         .hr-notification-toast-icon { width: 32px; height: 32px; display: grid; place-items: center; background: #1f2937; border-radius: 12px; }
         .hr-notification-toast p { margin: 0; font-size: 12px; color: #d1d5db; }
+        .hr-notification-permission-card { position: absolute; right: 0; top: 48px; width: 320px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 20px 40px rgba(15,23,42,.12); z-index: 40; padding: 16px; display: flex; flex-direction: column; gap: 12px; color: #1e293b; text-align: left; }
+        .hr-notification-permission-card strong { display: block; font-size: 14px; font-weight: 700; color: #1e293b; }
+        .hr-notification-permission-card p { margin: 4px 0 0; font-size: 12px; color: #64748b; line-height: 1.4; }
+        .hr-notification-permission-card button { background: #2563eb; color: #ffffff; border: none; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-align: center; }
+        .hr-notification-permission-card button:hover { background: #1d4ed8; }
       `}</style>
     </div>
   );
