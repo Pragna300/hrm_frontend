@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, LogOut } from 'lucide-react';
+import NotificationBell from '../components/NotificationBell';
 import { fetchMe, getStoredToken, getStoredUser, persistSessionUser, clearSession, api } from '../api/client';
 import {
   getSidebarNav,
@@ -164,6 +165,7 @@ const DashboardLayout = () => {
               )}
             </div>
           )}
+          <NotificationBell />
           <span className="hr-user-name">{user.name}</span>
           <div className="hr-avatar">{(user.name || 'U').charAt(0)}</div>
           <button type="button" onClick={handleLogout} className="hr-logout" title="Logout">
