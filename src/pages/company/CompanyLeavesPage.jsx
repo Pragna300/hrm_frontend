@@ -29,15 +29,16 @@ const CompanyLeavesPage = () => {
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [filter]);
 
   async function decide(id, decision) {
-    const note = decision === 'reject' ? prompt('Optional note for the requester:') : '';
     try {
-      const res = await api.post(`/leaves/${id}/decide`, { decision, note });
+      const res = await api.post(`/leaves/${id}/decide`, { decision });
       setMessage(res.message || 'Updated');
       await load();
     } catch (err) {
       setError(err.message);
     }
   }
+
+
 
   const columns = [
     {

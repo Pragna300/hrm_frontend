@@ -49,6 +49,7 @@ const EmployeeMePage = lazy(() => import('./pages/employee/EmployeeMePage'));
 const EmployeeDocumentsPage = lazy(() => import('./pages/employee/EmployeeDocumentsPage'));
 const EmployeeTasksPage = lazy(() => import('./pages/employee/EmployeeTasksPage'));
 const EmployeeOrgChartPage = lazy(() => import('./pages/employee/EmployeeOrgChartPage'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
 
 const PageLoader = () => (
   <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -111,6 +112,7 @@ function App() {
           <Route path="/employee/documents"  element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeDocumentsPage /></RoleGuard>} />
           <Route path="/employee/tasks"      element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeTasksPage /></RoleGuard>} />
           <Route path="/employee/org-chart"  element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeOrgChartPage /></RoleGuard>} />
+          <Route path="/notifications"      element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><NotificationsPage /></RoleGuard>} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

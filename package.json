@@ -10,13 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.17.0",
+    "lucide-react": "^0.473.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.1.1",
-    "lucide-react": "^0.473.0",
-    "framer-motion": "^11.17.0",
     "recharts": "^2.15.0",
-    "clsx": "^2.1.1",
+    "socket.io-client": "^4.8.3",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
