@@ -47,6 +47,7 @@ export const COMPANY_NAV_MANAGER = [
   { label: 'Leaves',        icon: icon(Calendar),     path: '/company/leaves' },
   { label: 'Payroll',       icon: icon(CreditCard),   path: '/company/payroll' },
   { label: 'Holidays',      icon: icon(CalendarDays), path: '/company/holidays' },
+  { label: 'Documents',     icon: icon(FileStack),    path: '/company/documents' },
   { label: 'Announcements', icon: icon(Megaphone),    path: '/company/announcements' },
   { label: 'Billing',       icon: icon(Receipt),      path: '/company/billing' },
   { label: 'Settings',      icon: icon(Settings),     path: '/company/settings' },
@@ -61,6 +62,7 @@ export const COMPANY_NAV_HR = [
   { label: 'Leaves',        icon: icon(Calendar),     path: '/company/leaves' },
   { label: 'Payroll',       icon: icon(CreditCard),   path: '/company/payroll' },
   { label: 'Holidays',      icon: icon(CalendarDays), path: '/company/holidays' },
+  { label: 'Documents',     icon: icon(FileStack),    path: '/company/documents' },
   { label: 'Announcements', icon: icon(Megaphone),    path: '/company/announcements' },
 ];
 

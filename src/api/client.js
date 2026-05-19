@@ -36,20 +36,32 @@ export function clearSession() {
   localStorage.removeItem(USER_KEY);
 }
 
-function authHeaders(extra = {}) {
+function authHeaders(extra = {}, isFormData = false) {
   const token = getStoredToken();
-  return {
-    'Content-Type': 'application/json',
+  const headers = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...extra,
   };
+  if (!isFormData && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
+  return headers;
 }
 
 /** Low-level fetch wrapper. Throws an Error with `.status` on HTTP failure. */
 export async function apiFetch(path, options = {}) {
+  const isFormData = options.body instanceof FormData;
+  
+  // If headers contains Content-Type, fetch won't auto-set the multipart boundary.
+  // We must ensure 'Content-Type' is NOT passed manually if we use FormData.
+  const reqHeaders = authHeaders(options.headers || {}, isFormData);
+  if (isFormData && reqHeaders['Content-Type']) {
+    delete reqHeaders['Content-Type'];
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
-    headers: { ...authHeaders(options.headers || {}), ...(options.headers || {}) },
+    headers: reqHeaders,
   });
 
   let body = null;
@@ -77,9 +89,9 @@ export async function apiFetch(path, options = {}) {
 
 export const api = {
   get:    (path) =>                  apiFetch(path),
-  post:   (path, data) =>            apiFetch(path, { method: 'POST',   body: data ? JSON.stringify(data) : undefined }),
-  put:    (path, data) =>            apiFetch(path, { method: 'PUT',    body: data ? JSON.stringify(data) : undefined }),
-  patch:  (path, data) =>            apiFetch(path, { method: 'PATCH',  body: data ? JSON.stringify(data) : undefined }),
+  post:   (path, data, options) =>   apiFetch(path, { method: 'POST',   body: data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined), ...options }),
+  put:    (path, data, options) =>   apiFetch(path, { method: 'PUT',    body: data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined), ...options }),
+  patch:  (path, data, options) =>   apiFetch(path, { method: 'PATCH',  body: data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined), ...options }),
   delete: (path) =>                  apiFetch(path, { method: 'DELETE' }),
 };
 
