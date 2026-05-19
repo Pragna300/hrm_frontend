@@ -1,4 +1,10 @@
-const API_BASE = import.meta.env?.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE = import.meta.env?.VITE_API_URL
+  ? (import.meta.env.VITE_API_URL.endsWith('/api')
+      ? import.meta.env.VITE_API_URL.replace(/\/$/, '')
+      : `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api`)
+  : typeof window !== 'undefined'
+  ? `${window.location.origin}/api`
+  : 'http://localhost:5000/api';
 
 const TOKEN_KEY = 'shnoor_token';
 const USER_KEY = 'shnoor_user';
