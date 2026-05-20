@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
 import { api } from '../../../api/client';
 import PageHeader from '../../../components/ui/PageHeader';
@@ -9,6 +10,7 @@ import EmployeeForm from './EmployeeForm';
 import { emptyEmployeeForm, mapEmployeeToForm, buildPayload } from './employeeFormConfig';
 
 const CompanyEmployeesPage = () => {
+  const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [locations, setLocations] = useState([]);
@@ -126,7 +128,7 @@ const CompanyEmployeesPage = () => {
       header: 'Actions',
       render: (r) => (
         <div className="flex gap-2">
-          <Button size="sm" variant="secondary" onClick={() => startEdit(r)}>Edit</Button>
+          <Button size="sm" variant="secondary" onClick={() => navigate(`/employees/${r.id}/view`)}>View</Button>
           <Button size="sm" variant="ghost" onClick={() => deactivate(r.id)}>
             <Trash2 size={14} />
           </Button>

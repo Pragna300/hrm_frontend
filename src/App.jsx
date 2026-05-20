@@ -35,6 +35,8 @@ const CompanyAnnouncementsPage = lazy(() => import('./pages/company/CompanyAnnou
 const CompanyBillingPage   = lazy(() => import('./pages/company/CompanyBillingPage'));
 const CompanySettingsPage  = lazy(() => import('./pages/company/CompanySettingsPage'));
 const CompanyDocumentsPage = lazy(() => import('./pages/company/CompanyDocumentsPage'));
+const EmployeeView = lazy(() => import('./pages/company/employees/EmployeeView'));
+const EmployeeEdit = lazy(() => import('./pages/company/employees/EmployeeEdit'));
 
 // Team lead
 const TeamOverviewPage = lazy(() => import('./pages/team/TeamOverviewPage'));
@@ -87,6 +89,8 @@ function App() {
           {/* Company-level (manager + hr) */}
           <Route path="/company/overview"      element={<RoleGuard allowed={COMPANY_ROLES}><CompanyOverview /></RoleGuard>} />
           <Route path="/company/employees"     element={<RoleGuard allowed={COMPANY_ROLES}><CompanyEmployeesPage /></RoleGuard>} />
+          <Route path="/employees/:id/view"    element={<RoleGuard allowed={COMPANY_ROLES}><EmployeeView /></RoleGuard>} />
+          <Route path="/employees/:id/edit"    element={<RoleGuard allowed={COMPANY_ROLES}><EmployeeEdit /></RoleGuard>} />
           <Route path="/company/departments"   element={<RoleGuard allowed={COMPANY_ROLES}><DepartmentsPage /></RoleGuard>} />
           <Route path="/company/locations"     element={<RoleGuard allowed={COMPANY_ROLES}><LocationsPage /></RoleGuard>} />
           <Route path="/company/shifts"        element={<RoleGuard allowed={COMPANY_ROLES}><ShiftsPage /></RoleGuard>} />

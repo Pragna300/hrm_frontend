@@ -16,7 +16,7 @@ const EmployeeForm = ({ form, onChange, onSubmit, saving, isEdit, lookups, onCan
         >
           <option value="">— Select —</option>
           {items.map((opt) => (
-            <option key={opt.id} value={opt.id}>
+            <option key={opt.id} value={String(opt.id)}>
               {opt.label}
             </option>
           ))}
