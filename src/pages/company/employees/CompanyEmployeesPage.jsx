@@ -32,7 +32,20 @@ const CompanyEmployeesPage = () => {
         api.get('/locations').catch(() => ({ data: [] })),
         api.get('/shifts').catch(() => ({ data: [] })),
       ]);
-      setEmployees(emp.data || []);
+      let empList = emp.data || [];
+      const roleLevel = (role) => {
+        if (role === 'manager' || role === 'super_admin') return 4;
+        if (role === 'hr') return 3;
+        if (role === 'team_lead') return 2;
+        return 1;
+      };
+      empList.sort((a, b) => {
+        const levelA = roleLevel(a.user?.role);
+        const levelB = roleLevel(b.user?.role);
+        if (levelA !== levelB) return levelB - levelA;
+        return (a.firstName || '').localeCompare(b.firstName || '');
+      });
+      setEmployees(empList);
       setDepartments(dep.data || []);
       setLocations(loc.data || []);
       setShifts(shift.data || []);
@@ -102,16 +115,24 @@ const CompanyEmployeesPage = () => {
     {
       key: 'name',
       header: 'Employee',
-      render: (r) => (
-        <div>
-          <div className="font-semibold text-slate-800">{r.firstName} {r.lastName}</div>
-          <div className="text-xs text-slate-500">{r.employeeCode} · {r.designation || '—'}</div>
-        </div>
-      ),
+      render: (r) => {
+        let fallbackRole = 'Intern';
+        if (r.user?.role === 'hr') fallbackRole = 'HR';
+        else if (r.user?.role === 'team_lead') fallbackRole = 'Team Lead';
+        else if (r.user?.role === 'manager') fallbackRole = 'Manager';
+        const displayRole = r.designation || r.role || fallbackRole;
+        
+        return (
+          <div>
+            <div className="font-semibold text-slate-800">{r.firstName} {r.lastName}</div>
+            <div className="text-xs text-slate-500">{r.employeeCode} · {displayRole}</div>
+          </div>
+        );
+      },
     },
     { key: 'email',     header: 'Email',      render: (r) => r.user?.email || r.workEmail || '—' },
     { key: 'role',      header: 'Role',       render: (r) => <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700 capitalize">{(r.user?.role || 'employee').replace('_', ' ')}</span> },
-    { key: 'department', header: 'Department', render: (r) => r.department?.name || '—' },
+    { key: 'department', header: 'Department', render: (r) => r.departments?.[0]?.department?.name || '—' },
     { key: 'location',   header: 'Location',   render: (r) => r.location?.name || '—' },
     {
       key: 'status',

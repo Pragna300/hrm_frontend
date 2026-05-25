@@ -34,7 +34,20 @@ const CompanyDocumentsPage = () => {
   useEffect(() => {
     loadDocs();
     api.get('/employees')
-      .then((res) => setEmployees(Array.isArray(res.data) ? res.data : []))
+      .then((res) => {
+        let list = Array.isArray(res.data) ? res.data : [];
+        list = [...list].sort((a, b) => {
+          const roleA = a.user?.role || '';
+          const roleB = b.user?.role || '';
+          const isFirstA = roleA === 'team_lead' || roleA === 'hr';
+          const isFirstB = roleB === 'team_lead' || roleB === 'hr';
+          
+          if (isFirstA && !isFirstB) return -1;
+          if (!isFirstA && isFirstB) return 1;
+          return (a.firstName || '').localeCompare(b.firstName || '');
+        });
+        setEmployees(list);
+      })
       .catch(() => setEmployees([]));
   }, []);
 

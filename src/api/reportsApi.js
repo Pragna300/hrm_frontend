@@ -15,6 +15,17 @@ export async function fetchOrganizationAttendance(params = {}) {
   return res.data;
 }
 
+export async function fetchDepartmentsReport() {
+  const res = await client.get('/reports/departments');
+  return res.data;
+}
+
+export async function fetchDepartmentEmployees(departmentId, params = {}) {
+  const qs = new URLSearchParams(params).toString();
+  const res = await client.get(`/reports/departments/${departmentId}?${qs}`);
+  return res.data;
+}
+
 export async function generateAttendanceReport(payload) {
   const res = await client.post('/reports/attendance', payload);
   return res.data;

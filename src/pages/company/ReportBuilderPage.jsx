@@ -150,14 +150,26 @@ export default function ReportBuilderPage() {
   }, [selectedJoinFrom]);
 
   const filteredEmployees = useMemo(() => {
+    let list = employees;
     const q = empSearch.toLowerCase();
-    return q
-      ? employees.filter(e =>
-          `${e.firstName} ${e.lastName}`.toLowerCase().includes(q) ||
-          (e.employeeCode || '').toLowerCase().includes(q) ||
-          (e.department?.name || '').toLowerCase().includes(q)
-        )
-      : employees;
+    if (q) {
+      list = list.filter(e =>
+        `${e.firstName} ${e.lastName}`.toLowerCase().includes(q) ||
+        (e.employeeCode || '').toLowerCase().includes(q) ||
+        (e.department?.name || '').toLowerCase().includes(q)
+      );
+    }
+    
+    return [...list].sort((a, b) => {
+      const roleA = a.user?.role || '';
+      const roleB = b.user?.role || '';
+      const isFirstA = roleA === 'team_lead' || roleA === 'hr';
+      const isFirstB = roleB === 'team_lead' || roleB === 'hr';
+      
+      if (isFirstA && !isFirstB) return -1;
+      if (!isFirstA && isFirstB) return 1;
+      return (a.firstName || '').localeCompare(b.firstName || '');
+    });
   }, [employees, empSearch]);
 
   function toggleEmp(id) {

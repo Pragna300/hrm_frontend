@@ -9,7 +9,12 @@ const EmployeeRoleManager = ({ employee, onUpdateRole, loading }) => {
 
   if (!employee) return null;
 
-  const currentRole = employee.role || employee.designation || 'Intern';
+  let fallbackRole = 'Intern';
+  if (employee.user?.role === 'hr') fallbackRole = 'HR';
+  else if (employee.user?.role === 'team_lead') fallbackRole = 'Team Lead';
+  else if (employee.user?.role === 'manager') fallbackRole = 'Manager';
+
+  const currentRole = employee.role || employee.designation || fallbackRole;
 
   const roles = [
     'Intern',

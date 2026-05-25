@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api, getStoredUser, persistSessionUser, fetchMe } from '../../api/client';
 import PageHeader from '../../components/ui/PageHeader';
 import Alert from '../../components/ui/Alert';
@@ -16,6 +17,7 @@ const READ_FIELDS = [
 ];
 
 const EmployeeMePage = () => {
+  const navigate = useNavigate();
   const session = getStoredUser() || {};
   const [profile, setProfile] = useState(null);
   const [form, setForm] = useState({});
@@ -93,6 +95,13 @@ const EmployeeMePage = () => {
       <PageHeader
         title="Me"
         subtitle="View your record and update the fields your company allows you to edit."
+        actions={
+          (session.role === 'manager' || session.role === 'hr') && session.employeeId ? (
+            <Button type="button" variant="secondary" onClick={() => navigate(`/employees/${session.employeeId}/edit`)}>
+              Edit full profile
+            </Button>
+          ) : null
+        }
       />
       {error && <Alert type="error">{error}</Alert>}
       {saved && <Alert type="success">{saved}</Alert>}

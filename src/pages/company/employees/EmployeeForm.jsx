@@ -24,13 +24,17 @@ const EmployeeForm = ({ form, onChange, onSubmit, saving, isEdit, lookups, onCan
       );
     }
     if (field.type === 'select') {
+      const options = [...field.options];
+      if (field.key === 'role' && form.role && !options.some((opt) => opt.value === form.role)) {
+        options.unshift({ value: form.role, label: form.role === 'manager' ? 'Manager' : form.role });
+      }
       return (
         <select
           className={InputClass}
           value={form[field.key]}
           onChange={(e) => update(field.key, e.target.value)}
         >
-          {field.options.map((opt) => (
+          {options.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
         </select>

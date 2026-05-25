@@ -35,7 +35,10 @@ const CompanyAnnouncementsPage = lazy(() => import('./pages/company/CompanyAnnou
 const CompanyBillingPage   = lazy(() => import('./pages/company/CompanyBillingPage'));
 const CompanySettingsPage  = lazy(() => import('./pages/company/CompanySettingsPage'));
 const CompanyDocumentsPage = lazy(() => import('./pages/company/CompanyDocumentsPage'));
+const ReportsDashboard = lazy(() => import('./pages/company/ReportsDashboard'));
 const CompanyReports = lazy(() => import('./pages/company/ReportsPage'));
+const DepartmentReports = lazy(() => import('./pages/company/DepartmentReports'));
+const DepartmentEmployees = lazy(() => import('./pages/company/DepartmentEmployees'));
 const ReportBuilderPage = lazy(() => import('./pages/company/ReportBuilderPage'));
 const EmployeeView = lazy(() => import('./pages/company/employees/EmployeeView'));
 const EmployeeEdit = lazy(() => import('./pages/company/employees/EmployeeEdit'));
@@ -101,9 +104,12 @@ function App() {
           <Route path="/company/holidays"      element={<RoleGuard allowed={COMPANY_ROLES}><CompanyHolidaysPage /></RoleGuard>} />
           <Route path="/company/announcements" element={<RoleGuard allowed={COMPANY_ROLES}><CompanyAnnouncementsPage /></RoleGuard>} />
           <Route path="/company/documents"     element={<RoleGuard allowed={COMPANY_ROLES}><CompanyDocumentsPage /></RoleGuard>} />
-          <Route path="/company/reports"        element={<RoleGuard allowed={COMPANY_ROLES}><CompanyReports /></RoleGuard>} />
-          <Route path="/company/reports/build"  element={<RoleGuard allowed={COMPANY_ROLES}><ReportBuilderPage /></RoleGuard>} />
-          <Route path="/company/billing"       element={<RoleGuard allowed="manager"><CompanyBillingPage /></RoleGuard>} />
+          <Route path="/company/reports"                   element={<RoleGuard allowed={COMPANY_ROLES}><ReportsDashboard /></RoleGuard>} />
+          <Route path="/company/reports/attendance"         element={<RoleGuard allowed={COMPANY_ROLES}><CompanyReports /></RoleGuard>} />
+          <Route path="/company/reports/departments"        element={<RoleGuard allowed={COMPANY_ROLES}><DepartmentReports /></RoleGuard>} />
+          <Route path="/company/reports/departments/:departmentId" element={<RoleGuard allowed={COMPANY_ROLES}><DepartmentEmployees /></RoleGuard>} />
+          <Route path="/company/reports/build"               element={<RoleGuard allowed={COMPANY_ROLES}><ReportBuilderPage /></RoleGuard>} />
+          <Route path="/company/billing"                    element={<RoleGuard allowed="manager"><CompanyBillingPage /></RoleGuard>} />
           <Route path="/company/settings"      element={<RoleGuard allowed="manager"><CompanySettingsPage /></RoleGuard>} />
 
           {/* Team lead */}
@@ -123,6 +129,10 @@ function App() {
           <Route path="/employee/tasks"      element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeTasksPage /></RoleGuard>} />
           <Route path="/employee/org-chart"  element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><EmployeeOrgChartPage /></RoleGuard>} />
           <Route path="/notifications"      element={<RoleGuard allowed={ALL_EMPLOYEE_ROLES}><NotificationsPage /></RoleGuard>} />
+          <Route path="/reports"               element={<Navigate to="/company/reports" replace />} />
+          <Route path="/reports/attendance"     element={<RoleGuard allowed={COMPANY_ROLES}><CompanyReports /></RoleGuard>} />
+          <Route path="/reports/departments"    element={<RoleGuard allowed={COMPANY_ROLES}><DepartmentReports /></RoleGuard>} />
+          <Route path="/reports/departments/:departmentId" element={<RoleGuard allowed={COMPANY_ROLES}><DepartmentEmployees /></RoleGuard>} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
