@@ -13,7 +13,7 @@ import FormField, { InputClass } from '../../../components/ui/FormField';
  *   resource: '/departments' | '/locations' | '/shifts'
  *   title, subtitle, fields: [{ key, label, type? }]
  */
-const OrgEntityPage = ({ resource, title, subtitle, fields, defaultRow = {} }) => {
+const OrgEntityPage = ({ resource, title, subtitle, fields, defaultRow = {}, actions = null }) => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -89,7 +89,16 @@ const OrgEntityPage = ({ resource, title, subtitle, fields, defaultRow = {} }) =
 
   return (
     <div>
-      <PageHeader title={title} subtitle={subtitle} actions={<Button onClick={startCreate}>+ New</Button>} />
+      <PageHeader
+        title={title}
+        subtitle={subtitle}
+        actions={(
+          <div className="flex items-center gap-2">
+            {actions}
+            <Button onClick={startCreate}>+ New</Button>
+          </div>
+        )}
+      />
       {error && <Alert type="error" onClose={() => setError('')}>{error}</Alert>}
       {loading
         ? <p className="text-sm text-slate-400">Loading…</p>

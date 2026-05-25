@@ -9,7 +9,12 @@ const EmployeeProfileCard = ({ employee }) => {
     ? 'bg-emerald-100 text-emerald-800 border-emerald-200' 
     : 'bg-slate-100 text-slate-700 border-slate-200';
 
-  const initial = employee.firstName ? employee.firstName[0].toUpperCase() : 'E';
+  let fallbackRole = 'Intern';
+  if (employee.user?.role === 'hr') fallbackRole = 'HR';
+  else if (employee.user?.role === 'team_lead') fallbackRole = 'Team Lead';
+  else if (employee.user?.role === 'manager') fallbackRole = 'Manager';
+
+  const displayRole = employee.designation || employee.role || fallbackRole;
 
   return (
     <div className="sticky top-6 flex flex-col gap-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-md">
@@ -23,12 +28,12 @@ const EmployeeProfileCard = ({ employee }) => {
           />
         ) : (
           <div className="flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-tr from-[#3174ad] to-sky-400 text-3xl font-bold text-white shadow-inner">
-            {initial}
+            {employee.firstName?.[0]}{employee.lastName?.[0]}
           </div>
         )}
         
         <h3 className="mt-4 text-xl font-bold text-slate-800">{fullName}</h3>
-        <p className="text-sm font-medium text-slate-500">{employee.designation || 'No Role Assigned'}</p>
+        <p className="text-sm font-medium text-slate-500">{displayRole}</p>
         
         <span className={`mt-3 inline-flex items-center gap-1 rounded-full border px-3 py-0.5 text-xs font-semibold uppercase tracking-wider ${statusColor}`}>
           <span className={`h-1.5 w-1.5 rounded-full ${employee.employmentStatus === 'active' ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
@@ -74,12 +79,12 @@ const EmployeeProfileCard = ({ employee }) => {
           </div>
         </div>
 
-        {employee.department?.name && (
+        {employee.departments?.[0]?.department?.name && (
           <div className="flex items-center gap-3 text-slate-600">
             <Shield size={16} className="text-[#3174ad]" />
             <div>
               <p className="text-xs text-slate-400 font-medium">Department</p>
-              <p className="font-semibold text-slate-700">{employee.department?.name}</p>
+              <p className="font-semibold text-slate-700">{employee.departments?.[0]?.department?.name}</p>
             </div>
           </div>
         )}

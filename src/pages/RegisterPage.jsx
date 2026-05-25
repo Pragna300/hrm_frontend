@@ -67,16 +67,25 @@ const RegisterPage = () => {
           billingCycle: formData.billingCycle,
         }),
       });
-      const data = await res.json();
-      if (data.success) {
+
+      // Read response as text first so we can handle non-JSON error bodies gracefully
+      const text = await res.text();
+      let data = null;
+      try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
+
+      if (res.ok && data && data.success) {
         navigate('/login', {
           state: { message: 'Company registered. Sign in as the manager.' },
         });
-      } else {
+      } else if (data && data.message) {
         setError(data.message);
+      } else if (!res.ok) {
+        // Generic server-side failure without JSON message
+        setError(`Request failed (${res.status})${text ? `: ${text}` : ''}`);
       }
-    } catch {
-      setError('Cannot reach server. Is the backend running?');
+    } catch (err) {
+      // Network error or other unexpected failure
+      setError(err?.message ? err.message : 'Cannot reach server. Is the backend running?');
     } finally {
       setLoading(false);
     }

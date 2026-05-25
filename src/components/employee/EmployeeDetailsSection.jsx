@@ -77,7 +77,7 @@ const EmployeeDetailsSection = ({ employee }) => {
                 <Briefcase size={16} className="text-[#3174ad]" /> Employment Details
               </h4>
               {infoRow('Employee Code', employee.employeeCode)}
-              {infoRow('Department', employee.department?.name)}
+              {infoRow('Department', employee.departments?.[0]?.department?.name)}
               {infoRow('Designation / Role', employee.designation || employee.role)}
               {infoRow('Employment Type', employee.employmentType ? employee.employmentType.replace('_', ' ').toUpperCase() : null)}
               {infoRow('Employment Status', employee.employmentStatus ? employee.employmentStatus.toUpperCase() : null)}

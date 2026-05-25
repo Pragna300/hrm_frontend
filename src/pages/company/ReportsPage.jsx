@@ -5,6 +5,7 @@ import {
   Users, UserCheck, UserX, Clock, TrendingUp,
   Eye, Loader, AlertCircle, X, ChevronRight,
   CalendarDays, FileText,
+  ArrowLeft,
 } from 'lucide-react';
 
 function fmt(iso) {
@@ -416,6 +417,15 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6 pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => navigate('/company/reports')}
+            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+          >
+            <ArrowLeft size={16} /> Reports dashboard
+          </button>
+        </div>
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-indigo-50 rounded-xl">
             <CalendarDays size={22} className="text-indigo-600" />
