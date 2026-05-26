@@ -7,6 +7,7 @@ import {
   Calendar,
   CreditCard,
   Megaphone,
+  MessageSquare,
   CalendarDays,
   Settings,
   Receipt,
@@ -80,6 +81,7 @@ export const NAV_BY_ROLE = {
     { label: 'Companies', icon: icon(Building2), path: '/owner/companies' },
     { label: 'Plans',     icon: icon(Package),   path: '/owner/plans' },
     { label: 'Invoices',  icon: icon(Receipt),   path: '/owner/invoices' },
+    { label: 'Contact Inquiries', icon: icon(MessageSquare), path: '/owner/contact-inquiries' },
   ],
 };
 

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { api } from '../api/client';
 import { formatInr } from '../lib/formatMoney';
+import ContactUsSection from '../components/landing/ContactUsSection';
 
 const LandingPage = () => {
   const [plans, setPlans] = useState([]);
@@ -25,6 +26,7 @@ const LandingPage = () => {
             <span className="brand-dot" /> HR Portal
           </Link>
           <div className="nav-actions">
+            <a href="#contact" className="btn-link">Contact</a>
             <Link to="/login" className="btn-link">Login</Link>
             <Link to="/register" className="btn-primary">Start free</Link>
           </div>
@@ -129,6 +131,8 @@ const LandingPage = () => {
           </div>
         </section>
       )}
+
+      <ContactUsSection />
 
       <footer className="footer">
         <div className="container footer-row">

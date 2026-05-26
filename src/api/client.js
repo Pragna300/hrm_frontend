@@ -87,12 +87,21 @@ export async function apiFetch(path, options = {}) {
   return body;
 }
 
+function buildUrl(path, params) {
+  if (!params || Object.keys(params).length === 0) return path;
+  const qs = Object.entries(params)
+    .filter(([, v]) => v !== undefined && v !== null && v !== '')
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&');
+  return qs ? `${path}?${qs}` : path;
+}
+
 export const api = {
-  get:    (path) =>                  apiFetch(path),
-  post:   (path, data, options) =>   apiFetch(path, { method: 'POST',   body: data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined), ...options }),
-  put:    (path, data, options) =>   apiFetch(path, { method: 'PUT',    body: data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined), ...options }),
-  patch:  (path, data, options) =>   apiFetch(path, { method: 'PATCH',  body: data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined), ...options }),
-  delete: (path) =>                  apiFetch(path, { method: 'DELETE' }),
+  get:    (path, options = {}) =>       apiFetch(buildUrl(path, options?.params), options),
+  post:   (path, data, options = {}) => apiFetch(buildUrl(path, options?.params), { method: 'POST',   body: data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined), ...options }),
+  put:    (path, data, options = {}) => apiFetch(buildUrl(path, options?.params), { method: 'PUT',    body: data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined), ...options }),
+  patch:  (path, data, options = {}) => apiFetch(buildUrl(path, options?.params), { method: 'PATCH',  body: data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined), ...options }),
+  delete: (path) =>                     apiFetch(path, { method: 'DELETE' }),
 };
 
 export async function fetchMe() {
