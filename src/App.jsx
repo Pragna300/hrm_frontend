@@ -41,6 +41,8 @@ const CompanyReports = lazy(() => import('./pages/company/ReportsPage'));
 const DepartmentReports = lazy(() => import('./pages/company/DepartmentReports'));
 const DepartmentEmployees = lazy(() => import('./pages/company/DepartmentEmployees'));
 const ReportBuilderPage = lazy(() => import('./pages/company/ReportBuilderPage'));
+const RegistrationReportsPage = lazy(() => import('./pages/company/RegistrationReportsPage'));
+
 const EmployeeView = lazy(() => import('./pages/company/employees/EmployeeView'));
 const EmployeeEdit = lazy(() => import('./pages/company/employees/EmployeeEdit'));
 
@@ -92,6 +94,8 @@ function App() {
           <Route path="/owner/plans"     element={<RoleGuard allowed="super_admin"><OwnerPlans /></RoleGuard>} />
           <Route path="/owner/invoices"  element={<RoleGuard allowed="super_admin"><OwnerInvoices /></RoleGuard>} />
           <Route path="/owner/contact-inquiries" element={<RoleGuard allowed="super_admin"><ContactInquiriesPage /></RoleGuard>} />
+          <Route path="/owner/reports"           element={<RoleGuard allowed="super_admin"><RegistrationReportsPage /></RoleGuard>} />
+
 
           {/* Company-level (manager + hr) */}
           <Route path="/company/overview"      element={<RoleGuard allowed={COMPANY_ROLES}><CompanyOverview /></RoleGuard>} />
@@ -111,6 +115,7 @@ function App() {
           <Route path="/company/reports/departments"        element={<RoleGuard allowed={COMPANY_ROLES}><DepartmentReports /></RoleGuard>} />
           <Route path="/company/reports/departments/:departmentId" element={<RoleGuard allowed={COMPANY_ROLES}><DepartmentEmployees /></RoleGuard>} />
           <Route path="/company/reports/build"               element={<RoleGuard allowed={COMPANY_ROLES}><ReportBuilderPage /></RoleGuard>} />
+
           <Route path="/company/billing"                    element={<RoleGuard allowed="manager"><CompanyBillingPage /></RoleGuard>} />
           <Route path="/company/settings"      element={<RoleGuard allowed="manager"><CompanySettingsPage /></RoleGuard>} />
 
