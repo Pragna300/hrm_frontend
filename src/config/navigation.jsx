@@ -82,8 +82,11 @@ export const NAV_BY_ROLE = {
     { label: 'Plans',     icon: icon(Package),   path: '/owner/plans' },
     { label: 'Invoices',  icon: icon(Receipt),   path: '/owner/invoices' },
     { label: 'Contact Inquiries', icon: icon(MessageSquare), path: '/owner/contact-inquiries' },
+    { label: 'Registration Reports', icon: icon(FileText), path: '/owner/reports' },
   ],
 };
+
+
 
 const WORKSPACE_KEY = 'hr_workspace';
 
