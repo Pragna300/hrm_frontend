@@ -8,6 +8,7 @@ const LoginPage = () => {
   const location = useLocation();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [errorCode, setErrorCode] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -22,6 +23,7 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setErrorCode('');
     setSuccess('');
     setLoading(true);
     try {
@@ -44,6 +46,7 @@ const LoginPage = () => {
         navigate(defaultPathForRole(role));
       } else {
         setError(data.message);
+        setErrorCode(data.code || '');
       }
     } catch {
       setError('Cannot reach server. Please check if backend is running.');
@@ -65,7 +68,18 @@ const LoginPage = () => {
             <p>Sign in to access your company workspace.</p>
           </div>
 
-          {error && <div className="alert error">{error}</div>}
+          {error && (
+            <div className="alert error">
+              {error}
+              {errorCode === 'COMPANY_SUSPENDED' && (
+                <div style={{ marginTop: '10px' }}>
+                  <Link to="/contact" style={{ color: '#3b82f6', textDecoration: 'underline', fontWeight: 'bold' }}>
+                    Contact Support
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
           {success && <div className="alert success">{success}</div>}
 
           <form className="login-form" onSubmit={handleSubmit}>
