@@ -124,7 +124,7 @@ const LandingPage = () => {
                       <li key={f}><Check size={14} /> {f.trim()}</li>
                     ))}
                   </ul>
-                  <Link to="/register" className="plan-cta">Choose {p.name}</Link>
+                  <Link to={`/owner/subscription?priceId=${p.id}`} className="plan-cta">Choose {p.name}</Link>
                 </div>
               ))}
             </div>

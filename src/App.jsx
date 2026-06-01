@@ -22,6 +22,7 @@ const OwnerCompanies = lazy(() => import('./pages/owner/OwnerCompanies'));
 const OwnerPlans     = lazy(() => import('./pages/owner/OwnerPlans'));
 const OwnerInvoices  = lazy(() => import('./pages/owner/OwnerInvoices'));
 const ContactInquiriesPage = lazy(() => import('./pages/owner/ContactInquiriesPage'));
+const OwnerSubscription = lazy(() => import('./pages/owner/Subscription'));
 
 // Company (manager / hr)
 const CompanyOverview      = lazy(() => import('./pages/company/CompanyOverview'));
@@ -92,6 +93,7 @@ function App() {
           <Route path="/owner/overview"  element={<RoleGuard allowed="super_admin"><OwnerOverview /></RoleGuard>} />
           <Route path="/owner/companies" element={<RoleGuard allowed="super_admin"><OwnerCompanies /></RoleGuard>} />
           <Route path="/owner/plans"     element={<RoleGuard allowed="super_admin"><OwnerPlans /></RoleGuard>} />
+          <Route path="/owner/subscription" element={<RoleGuard allowed="super_admin"><OwnerSubscription /></RoleGuard>} />
           <Route path="/owner/invoices"  element={<RoleGuard allowed="super_admin"><OwnerInvoices /></RoleGuard>} />
           <Route path="/owner/contact-inquiries" element={<RoleGuard allowed="super_admin"><ContactInquiriesPage /></RoleGuard>} />
           <Route path="/owner/reports"           element={<RoleGuard allowed="super_admin"><RegistrationReportsPage /></RoleGuard>} />
@@ -117,6 +119,7 @@ function App() {
           <Route path="/company/reports/build"               element={<RoleGuard allowed={COMPANY_ROLES}><ReportBuilderPage /></RoleGuard>} />
 
           <Route path="/company/billing"                    element={<RoleGuard allowed="manager"><CompanyBillingPage /></RoleGuard>} />
+          <Route path="/company/subscription"               element={<RoleGuard allowed="manager"><OwnerSubscription /></RoleGuard>} />
           <Route path="/company/settings"      element={<RoleGuard allowed="manager"><CompanySettingsPage /></RoleGuard>} />
 
           {/* Team lead */}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/client';
 import { formatInr } from '../../lib/formatMoney';
 import PageHeader from '../../components/ui/PageHeader';
@@ -23,6 +24,7 @@ const blankPlan = {
 };
 
 const OwnerPlans = () => {
+  const navigate = useNavigate();
   const [plans, setPlans] = useState([]);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(null);
@@ -98,6 +100,13 @@ const OwnerPlans = () => {
       header: 'Actions',
       render: (r) => (
         <Button size="sm" variant="secondary" onClick={() => startEdit(r)}>Edit</Button>
+      ),
+    },
+    {
+      key: 'subscribe',
+      header: 'Subscribe',
+      render: (r) => (
+        <Button size="sm" variant="primary" onClick={() => navigate(`/owner/subscription?priceId=${r.id}`)}>Subscribe</Button>
       ),
     },
   ];
