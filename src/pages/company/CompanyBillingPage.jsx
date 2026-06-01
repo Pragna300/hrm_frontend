@@ -25,7 +25,18 @@ const CompanyBillingPage = () => {
 
   return (
     <div>
-      <PageHeader title="Billing" subtitle="Your subscription, invoices and payment history." />
+      <PageHeader
+        title="Billing"
+        subtitle="Your subscription, invoices and payment history."
+        actions={
+          <button
+            onClick={() => window.location.href = '/company/subscription'}
+            className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+          >
+            Manage Subscription
+          </button>
+        }
+      />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
           icon={<CreditCard size={20} />}

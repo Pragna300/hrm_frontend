@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Check } from 'lucide-react';
-import { api, API_BASE } from '../api/client';
+import { api, API_BASE, persistSession } from '../api/client';
 import { formatInr } from '../lib/formatMoney';
 import ConsentCheckbox from '../components/ConsentCheckbox';
 
@@ -74,8 +74,46 @@ const RegisterPage = () => {
       try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
 
       if (res.ok && data && data.success) {
+        try {
+          // Auto-login to get the auth token
+          const loginRes = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: formData.email, password: formData.password })
+          });
+          const loginData = await loginRes.json();
+          
+          if (loginRes.ok && loginData.token) {
+            // Persist session in localStorage
+            persistSession(loginData.token, loginData.user);
+
+            const activePlan = plans.find(p => p.slug === formData.planSlug);
+            if (activePlan) {
+              const stripeRes = await fetch(`${API_BASE}/stripe/create-checkout-session`, {
+                method: 'POST',
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${loginData.token}`
+                },
+                body: JSON.stringify({ priceId: activePlan.id })
+              });
+              
+              const stripeData = await stripeRes.json();
+              if (stripeRes.ok && stripeData.url) {
+                window.location.href = stripeData.url;
+                return;
+              }
+            }
+            // If Stripe fails but login succeeded, go to dashboard
+            navigate('/company/billing', { replace: true });
+            return;
+          }
+        } catch (e) {
+          console.error('Auto login / stripe redirect failed', e);
+        }
+
         navigate('/login', {
-          state: { message: 'Company registered. Sign in as the manager.' },
+          state: { message: 'Company registered. Sign in to complete payment.' },
         });
       } else if (data && data.message) {
         setError(data.message);
@@ -152,7 +190,7 @@ const RegisterPage = () => {
             />
 
             <button className="submit-btn" disabled={loading || !consentChecked}>
-              {loading ? <span className="spinner" /> : 'Create company'}
+              {loading ? <span className="spinner" /> : (formData.planSlug ? `Create company on ${plans.find(p => p.slug === formData.planSlug)?.name || 'Selected'} Plan` : 'Create company')}
             </button>
           </form>
 
@@ -243,6 +281,10 @@ const RegisterPage = () => {
         .pick-head { display: flex; justify-content: space-between; font-size: 14px; color: #0f172a; }
         .pick-desc { font-size: 12px; color: #64748b; margin: 6px 0; }
         .pick-feature { font-size: 11px; color: #475569; display: inline-flex; align-items: center; gap: 6px; }
+
+        .plan-subscribe-btn { display: block; width: 100%; margin-top: 12px; padding: 9px 0; font-size: 13px; font-weight: 700; color: #fff; background: #0f172a; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; animation: subscribeSlide 0.25s ease-out; }
+        .plan-subscribe-btn:hover { background: #1e293b; box-shadow: 0 4px 12px rgba(15,23,42,0.25); }
+        @keyframes subscribeSlide { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
         .cycle-toggle { display: flex; gap: 6px; margin-top: 16px; padding: 4px; background: #f1f5f9; border-radius: 8px; }
         .cycle-toggle button { flex: 1; padding: 8px; font-size: 12px; font-weight: 700; border: none; background: transparent; border-radius: 6px; color: #64748b; cursor: pointer; }
